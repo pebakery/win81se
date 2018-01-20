@@ -1,0 +1,1204 @@
+[Main]
+Title=Junction
+Type=Plugin
+Author=Lancelot
+Description=Junc some folders to another drive (another disk, ramdrive) to speed up build. Mainly Speed up CreateISO and PostConfig stages. Using Ramdrive 4GB adviced ;)
+Credits=http://TheOven.org
+Version=022
+Download_Level=1
+Level=1
+Selected=False
+Mandatory=False
+NoWarning=False
+Contact=http://TheOven.org/index.php?topic=370
+Date=2017.11.22
+Depend=
+Disable=
+Web1=http://gena.cwcodes.net/Projects/Gena/Basic/Build/2%20-%20t_Junc.script
+WebRootSubSub=Build
+WebRootFile=0-preconfig_t_Junc.script
+WebRootFile_Gena=2 - t_Junc.script
+CertifiedBy=
+Certification=
+HistoryNotes01=Junc TargetDir requires on each Build (Since TargetDir deleted during build) - Empty TargetDir junc very fast ;)
+HistoryNotes02=Read [HistoryNotes01] section to customize current plugin if required
+HistoryNotes03a=On SE plugin folder\name = \Build\0-preconfig_t_Junc.script // Disable 1 - Copy Files\'Clear Target Folder' ++ Enable 0 - PreConfig\'Clear Target Folder'
+HistoryNotes03b=On Gena plugin folder\name = \Basic\Build\2 - t_Junc.script
+HistoryNotes04=Backup Restore Plugin use Junction Plugin: [Find_JuncAdd] , %Target_CheckBox% , %JunctionPluginS% , "\Build\0-preconfig_t_Junc.script" , "\Basic\Build\2 - t_Junc.script"
+History001=Lancelot 2015.02.05 Plugin created
+History002=Lancelot added ProjectDir option (ProjectDirB option only works on Gena ) // Check already junc at first (to speed up 2nd run)
+History002b=Lancelot Some more fall backs to keep end user safe
+History002c=Lancelot Junc TargetImage only at OSFamily NT6 (to keep default settings ;) -- TargetImage buttons still works independent from OSFamily)
+History003=Lancelot improvments for Forgetten Junc (Forgetten Junc = Target folder not exists anymore (ex: junced, than target drive removed))
+History005=Lancelot Added size checks
+History006=Lancelot Free Space button also shows MB
+History007=Lancelot RegFactoryHDD_CheckBox for Gena // FreeSize button improved // Retrieve,FolderSize winbuilder bug workarounded (again ;)) // Folder Size info improved
+History008=Lancelot Added RemoveAllRD_Button to remove all junctions and delete folder easly
+History010=Lancelot Added Challenging ;) DU buttons etc.
+History011=Lancelot Precheck filename for Gena
+History012=Lancelot Download to Yomi with Title "Junction Y" x 2
+History014=Lancelot Syntax updated - Date:2016.01.24
+History015=Lancelot Fixed Double IF // Fixed minor bugy DummyFileForPreJuncCheck1.txt - Date:2016.10.01
+History016=Lancelot Added YomiD_CheckBox etc. - Date:2016.10.02
+History017=Lancelot Attached "Q Ramdisk Folders.cmd" to have at a safe place ;) - Date:2016.10.02
+History018=Lancelot Added ProjectTemp_CheckBox MLTemp_CheckBox - Date:2016.11.07
+History019=Lancelot Changed \TargetImage to new \TI - Date:2016.11.11
+History020=Lancelot Added some Delete Buttons // chkdsk_F_Drive_Button -> attached 2017-02-24_233132.png + .txt -> To fix "Location is not Avaiable" - "The file or directory is corrupted and unreadable" - Date:2017.02.25
+History021=Lancelot Delete Buttons with progress window - Date:2017.08.24
+History022=Lancelot %ISODir% deprecated - Date:2017.11.22
+
+[HistoryNotes01]
+To Create Personal junc folder organisation, you can easly modify this plugin (different folders, different drives)
+//-
+On Relevant [......Add] section use
+Run,%ScriptFile%,Junc_Process,%FromFolder%,%ToFolder%
+//-
+On Relevant [......Remove] section use
+Run,%ScriptFile%,JuncRemove_Process,%FromFolder%,%ToFolder%,Delete
+
+[InterFace]
+Main_Bevel=pBevel1,1,12,5,5,387,32
+Drive_TextLabel="Junc Drive:",1,1,9,11,57,18,8,Normal
+Drive_ScrollBox=Q:,1,4,72,10,42,21,A:,B:,C:,D:,E:,F:,G:,H:,I:,J:,K:,L:,M:,N:,O:,P:,Q:,R:,S:,T:,U:,V:,W:,X:,Y:,Z:,--
+//--
+ALL_JButton=J,1,8,141,8,25,25,Process,Process,False,False,False,_Process_,False,"__Add Junc Selected ([Process])"
+ALL_JOpendirButton=,1,8,166,11,20,20,Process_OpenDirJ,opendir.bmp,False,False,_Process_OpenDirJ_,False,"__Open Folder"
+ALL_RButton=R,1,8,194,8,26,25,Process_Remove,True,False,False,_Process_Remove_,False,"__Remove Junc ALL (exception: TargetImage only on OSFamily NT6 (=WinXSE))"
+ALL_ROpendirButton2=,1,8,255,9,24,24,Process_OpenDirT,opendir.bmp,False,False,_Process_OpenDirT_,False,"__Open Junc Folder"
+//--
+Target_CheckBox_NT6=,1,3,122,50,17,18,True,"__SE Only -- Disable 1 - Copy Files\ClearTarget"
+//--
+Target_CheckBox="Junc Target",1,3,21,50,84,18,True,"__Helps getting CreateISO-PostConfig faster"
+Target_JButton=j,0,8,141,45,25,25,JuncTarget_Add,True,False,False,_JuncTarget_Add_,False,"__Add Junc"
+Target_JOpendirButton=,0,8,166,51,20,20,JuncTarget_OpenDirJ,opendir.bmp,False,False,_JuncTarget_OpenDirJ_,False,"__Open Folder"
+Target_RButton=r,0,8,194,45,26,25,JuncTarget_Remove,True,False,False,_JuncTarget_Remove_,False,"__Remove Junc"
+Target_ROpendirButton2=,0,8,221,51,20,20,JuncTarget_OpenDirT,opendir.bmp,False,False,_JuncTarget_OpenDirT_,False,"__Open Junc Folder"
+Target_Delete_Button=,1,8,0,47,20,20,Delete_Target_P_B,trash.bmp,False,_Delete_Target_P_B_,False,"__Delete Target."
+//--
+TargetImage_CheckBox="Junc TargetImage",1,3,20,89,114,18,True,"__Only SE -  Helps PostConfig a looot Faster"
+TargetImage_JButton=j,0,8,141,85,25,25,JuncTargetImage_Add,False,False,False,_JuncTargetImage_Add_,False,"__Add Junc"
+TargetImage_JOpendirButton=,0,8,166,91,20,20,JuncTargetImage_OpenDirJ,opendir.bmp,False,False,_JuncTargetImage_OpenDirJ_,False,"__Open Folder"
+TargetImage_RButton=r,0,8,194,85,26,25,JuncTargetImage_Remove,True,False,False,_JuncTargetImage_Remove_,False,"__Remove Junc"
+TargetImage_ROpendirButton2=,0,8,221,91,20,20,JuncTargetImage_OpenDirT,opendir.bmp,False,False,_JuncTargetImage_OpenDirT_,False,"__Open Junc Folder"
+TargetImage_Delete_Button=,1,8,0,87,20,20,Delete_TargetImage_P_B,trash.bmp,False,_Delete_TargetImage_P_B_,False,"__Delete TargetImage (NT6x)."
+//--
+IsoFolder_CheckBox="Junc IsoFolder",0,3,21,130,86,18,False,"__Does not help Speed Up - Seeing is Believing"
+IsoFolder_JButton=j,0,8,141,125,25,25,JuncIsoFolder_Add,False,False,False,_JuncIsoFolder_Add_,False,"__Add Junc"
+IsoFolder_JOpendirButton=,0,8,166,131,20,20,JuncIsoFolder_OpenDirJ,opendir.bmp,False,False,_JuncIsoFolder_OpenDirJ_,False,"__Open Folder"
+IsoFolder_RButton=r,0,8,194,125,26,25,JuncIsoFolder_Remove,True,False,False,_JuncIsoFolder_Remove_,False,"__Remove Junc"
+IsoFolder_ROpendirButton2=,0,8,221,131,20,20,JuncIsoFolder_OpenDirT,opendir.bmp,False,False,_JuncIsoFolder_OpenDirT_,False,"__Open Junc Folder"
+//--
+ProjectDir_CheckBox="Junc ProjectDir",0,3,21,170,97,18,False,"__Does not help Speed Up - Seeing is Believing - Only enable disable/ Search (AgentRanshack)  plugins faster ;) (Only a little Confort if you have lots of ram)"
+ProjectDirB_CheckBox=,0,3,122,170,17,18,False,"__2nd Project Dir - Gena only"
+ProjectDir_JButton=j,0,8,141,165,25,25,JuncProjectDir_Add_Bttn,False,False,False,_JuncProjectDir_Add_Bttn_,False,"__Add Junc Selected"
+ProjectDir_JOpendirButton=,0,8,166,171,20,20,JuncProjectDir_OpenDirJ,opendir.bmp,False,False,_JuncProjectDir_OpenDirJ_,False,"__Open Folder"
+ProjectDir_RButton=r,0,8,194,165,26,25,JuncProjectDir_Remove_Bttn,True,False,False,_JuncProjectDir_Remove_Bttn_,False,"__Remove Junc Selected"
+ProjectDir_ROpendirButton=,0,8,221,171,20,20,JuncProjectDir_OpenDirT,opendir.bmp,False,False,_JuncProjectDir_OpenDirT_,False,"__Open Junc Folder"
+//--
+RegFactoryHDD_CheckBox="Junc ProjectTemp\ RegFactoryHDD",0,3,20,204,110,27,False,"__Gena Only Requires 1 GB - Faster FileCopy Before-After RF"
+RegFactoryHDD_JButton=j,0,8,141,205,25,25,JuncRegFactoryHDD_Add,False,False,False,_JuncRegFactoryHDD_Add_,False,"__Add Junc Selected"
+RegFactoryHDD_JOpendirButton=,0,8,166,211,20,20,JuncRegFactoryHDD_OpenDirJ,opendir.bmp,False,False,_JuncRegFactoryHDD_OpenDirJ_,False,"__Open Folder"
+RegFactoryHDD_RButton=r,0,8,194,205,26,25,JuncRegFactoryHDD_Remove,True,False,False,_JuncRegFactoryHDD_Remove_,False,"__Remove Junc Selected"
+RegFactoryHDD_ROpendirButton=,0,8,221,211,20,20,JuncRegFactoryHDD_OpenDirT,opendir.bmp,False,False,_JuncRegFactoryHDD_OpenDirT_,False,"__Open Junc Folder"
+//--
+YomiD_CheckBox="Junc YomiD (\Downloads\)",0,3,19,244,105,27,False
+YomiD_JButton=j,0,8,141,245,25,25,JuncYomiD_Add,JuncYomiD_Add,False,False,False,_JuncYomiD_Add_,False,"__Add Junc Selected"
+YomiD_JOpendirButton=,0,8,166,251,20,20,JuncYomiD_OpenDirJ,opendir.bmp,False,False,_JuncYomiD_OpenDirJ_,False,"__Open Folder"
+YomiD_RButton=r,0,8,194,245,26,25,JuncYomiD_Remove,True,False,False,_JuncYomiD_Remove_,False,"__Remove Junc Selected"
+YomiD_ROpendirButton=,0,8,221,251,20,20,JuncYomiD_OpenDirT,opendir.bmp,False,False,_JuncYomiD_OpenDirT_,False,"__Open Junc Folder"
+//--
+ProjectTemp_CheckBox="Junc ProjectTemp",0,3,19,289,105,20,False
+ProjectTemp_JButton=j,0,8,141,285,25,25,JuncProjectTemp_Add,False,False,False,_JuncProjectTemp_Add_,False,"__Add Junc Selected"
+ProjectTemp_JOpendirButton=,0,8,166,291,20,20,JuncProjectTemp_OpenDirJ,opendir.bmp,False,False,_JuncProjectTemp_OpenDirJ_,False,"__Open Folder"
+ProjectTemp_RButton=r,0,8,194,285,26,25,JuncProjectTemp_Remove,True,False,False,_JuncProjectTemp_Remove_,False,"__Remove Junc Selected"
+ProjectTemp_ROpendirButton=,0,8,221,291,20,20,JuncProjectTemp_OpenDirT,opendir.bmp,False,False,_JuncProjectTemp_OpenDirT_,False,"__Open Junc Folder"
+ProjectTemp_Delete_Button=,0,8,0,287,20,20,Delete_ProjectTemp_P_B,trash.bmp,False,_Delete_ProjectTemp_P_B_,False,"__Delete ProjectTemp."
+//--
+MLTemp_CheckBox="Junc Macro_Library Temp (\Temp\Macro_Library\)",0,3,1,324,139,27,False
+MLTemp_JButton=j,0,8,141,324,25,25,JuncMLTemp_Add,False,False,False,_JuncMLTemp_Add_,False,"__Add Junc Selected"
+MLTemp_JOpendirButton=,0,8,166,331,20,20,JuncMLTemp_OpenDirJ,opendir.bmp,False,False,_JuncMLTemp_OpenDirJ_,False,"__Open Folder"
+MLTemp_RButton=r,0,8,194,325,26,25,JuncMLTemp_Remove,True,False,False,_JuncMLTemp_Remove_,False,"__Remove Junc Selected"
+MLTemp_ROpendirButton=,0,8,221,331,20,20,JuncMLTemp_OpenDirT,opendir.bmp,False,False,_JuncMLTemp_OpenDirT_,False,"__Open Junc Folder"
+//--
+BackupRestore_Bevel=pBevel1,0,12,299,46,200,154
+//--
+BackupRestore_1_CheckBox=BackupRestore_1_Basic,0,3,308,55,140,18,False
+BackupRestore_3_CheckBox=BackupRestore_3_Components,0,3,308,78,177,18,False
+BackupRestore_6_CheckBox=BackupRestore_6_Drivers,0,3,308,102,161,18,False
+BackupRestore_8_CheckBox=BackupRestore_8_Optimizations,0,3,307,127,182,18,False
+//--
+BackupRestore_JButton=j,0,8,322,165,25,25,Process_BackupRestore,False,False,False,_Process_BackupRestore_,False,"__Add Junc"
+BackupRestore_JOpendirButton=,0,8,351,171,20,20,BackupRestore_OpenDirJ,opendir.bmp,False,False,_BackupRestore_OpenDirJ_,False,"__Open Folder"
+BackupRestore_RButton=r,0,8,373,165,26,25,Process_BackupRestore_Remove,True,False,False,_Process_BackupRestore_Remove_,False,"__Remove Junc"
+BackupRestore_ROpendirButton2=,0,8,403,171,20,20,BackupRestore_OpenDirT,opendir.bmp,False,False,_BackupRestore_OpenDirT_,False,"__Open Junc Folder"
+//---
+pButton_Show_Second_Gui=a,1,8,403,232,16,16,Show_Second_Gui,True,False,False,_Show_Second_Gui_,False,"__Advanced Options"
+pButton_Show_First_Gui=b,0,8,403,232,16,16,Show_First_Gui,True,False,False,_Show_First_Gui_,False,"__Basic Options"
+pWebLabel1="SoftPerfect RamDisk",1,10,262,247,98,18,https://www.softperfect.com/products/ramdisk/
+pWebLabel2="NTFS junction point - Wikipedia",1,10,263,264,148,18,http://en.wikipedia.org/wiki/NTFS_junction_point
+pWebLabel3="Plugin Page",1,10,340,286,55,18,http://TheOven.org/index.php?topic=1198
+FreeSpace_Button="Free Space / Size",1,8,289,9,98,25,FreeSpace,0,False,False,_FreeSpace_,False
+RemoveAllRD_Button=RRR,1,8,222,8,31,25,RemoveAllRD,0,False,False,_RemoveAllRD_,False,"__Remove ALL Junctions and Remove ALL Folders (including Target Base)"
+Button_Download=,1,8,403,21,24,24,DownloadXXX,DoubleJDesignRavenna3dArrowDown0016016.bmp,False,False,_DownloadXXX_,False,"__DOWNLOAD Plugin"
+Button_Upload=,1,8,403,-1,24,24,UploadXXX,BokehliciaCaptivaSoftwareupload0016016.bmp,False,False,_UploadXXX_,False,"__UPLOAD Plugin (Admins Only)"
+Button_CompareEdit=,1,8,426,-1,24,24,CompareEditXXX,AmperossQetto2Move0016016.bmp,False,False,_CompareEditXXX_,False,"__DOWNLOAD and Compare with an Editor"
+//-
+chkdsk_F_Drive_Button="chkdsk /f <Junc Drive>",0,8,302,205,132,25,chkdsk_F_Drive_P_B,0,False,False
+
+[Variables]
+
+[Process]
+If,%OSFamily%,Equal,NT6,Begin
+//To avoid DirMove FallBack that cause too much time at lost config: Junc Target and TargetImage at the same time.
+If,%Target_CheckBox%,Equal,True,Set,%TargetImage_CheckBox%,True,Permanent
+If,%TargetImage_CheckBox%,Equal,True,Set,%Target_CheckBox%,True,Permanent
+End
+//-
+If,%ProjectName%,Equal,Gena,IniRead,%ScriptFile%,Main,WebRootFile_Gena,%t%
+If,%ProjectName%,Equal,Gena,StrFormat,FileName,%ScriptFile%,%ScriptFileName%
+Set,%Gena_Exit%,0
+If,%ProjectName%,Equal,Gena,Begin
+If,Not,%ScriptFileName%,Equal,%t%,Set,%Gena_Exit%,1
+End
+If,%Gena_Exit%,Equal,1,Exit,"Gena use Junction Plugin at Basic\Build\'Junction' - Exiting"
+//-
+If,%Target_CheckBox%,Equal,True,Run,%ScriptFile%,JuncTarget_Add
+If,%TargetImage_CheckBox%,Equal,True,Begin
+If,%OSFamily%,Equal,NT6,Run,%ScriptFile%,JuncTargetImage_Add
+End
+If,%IsoFolder_CheckBox%,Equal,True,Run,%ScriptFile%,JuncIsoFolder_Add
+If,%ProjectDir_CheckBox%,Equal,True,Run,%ScriptFile%,JuncProjectDir_Add
+If,%ProjectDirB_CheckBox%,Equal,True,Run,%ScriptFile%,JuncProjectDirB_Add
+If,%RegFactoryHDD_CheckBox%,Equal,True,Run,%ScriptFile%,JuncRegFactoryHDD_Add
+If,%YomiD_CheckBox%,Equal,True,Run,%ScriptFile%,JuncYomiD_Add
+If,%ProjectTemp_CheckBox%,Equal,True,Run,%ScriptFile%,JuncProjectTemp_Add
+If,%MLTemp_CheckBox%,Equal,True,Run,%ScriptFile%,JuncMLTemp_Add
+Run,%ScriptFile%,Process_BackupRestore
+
+[Process_Remove]
+Run,%ScriptFile%,JuncTarget_Remove
+If,%OSFamily%,Equal,NT6,Run,%ScriptFile%,JuncTargetImage_Remove
+Run,%ScriptFile%,JuncIsoFolder_Remove
+Run,%ScriptFile%,JuncProjectDir_Remove
+Run,%ScriptFile%,JuncProjectDirB_Remove
+Run,%ScriptFile%,JuncRegFactoryHDD_Remove
+//-
+Run,%ScriptFile%,BackupRestore_1_Remove
+Run,%ScriptFile%,BackupRestore_3_Remove
+Run,%ScriptFile%,BackupRestore_6_Remove
+Run,%ScriptFile%,BackupRestore_8_Remove
+
+[Process_BackupRestore]
+If,%BackupRestore_1_CheckBox%,Equal,True,Run,%ScriptFile%,BackupRestore_1_Add
+If,%BackupRestore_3_CheckBox%,Equal,True,Run,%ScriptFile%,BackupRestore_3_Add
+If,%BackupRestore_6_CheckBox%,Equal,True,Run,%ScriptFile%,BackupRestore_6_Add
+If,%BackupRestore_8_CheckBox%,Equal,True,Run,%ScriptFile%,BackupRestore_8_Add
+
+[Process_BackupRestore_Remove]
+If,%BackupRestore_1_CheckBox%,Equal,True,Run,%ScriptFile%,BackupRestore_1_Remove
+If,%BackupRestore_3_CheckBox%,Equal,True,Run,%ScriptFile%,BackupRestore_3_Remove
+If,%BackupRestore_6_CheckBox%,Equal,True,Run,%ScriptFile%,BackupRestore_6_Remove
+If,%BackupRestore_8_CheckBox%,Equal,True,Run,%ScriptFile%,BackupRestore_8_Remove
+
+[Process_OpenDirJ]
+Call,OpenDir,%BaseDir%
+
+[Process_OpenDirT]
+Run,%ScriptFile%,Find_TFolder,%BaseDir%
+Call,OpenDir,%JuncT_Folder%
+
+[--------]
+--------------------------------------------
+
+[JuncTarget_Add]
+Run,%ScriptFile%,Find_JuncAdd,%TargetDir%
+//--
+If,%Target_CheckBox_NT6%%OSFamily%,Equal,TrueNT6,Run,%ScriptFile%,JuncTarget_Add_SE_Special
+
+[JuncTarget_Add_SE_Special]
+Set,%r%,%BaseDir%\Projects\%ProjectName%\Build\1-files.script
+If,ExistFile,%r%,Begin
+Set,%t%,-
+IniRead,%r%,Interface,ClearTarget_CheckBox,%t%
+If,Not,%t%,Equal,-,Begin
+ChangeInterface,Write,Value,%r%,InterFace,ClearTarget_CheckBox,False
+End
+End
+
+[JuncTarget_Remove]
+Run,%ScriptFile%,Find_JuncRemove,%TargetDir%
+
+[JuncTarget_OpenDirJ]
+Call,OpenDir,%TargetDir%
+
+[JuncTarget_OpenDirT]
+Run,%ScriptFile%,Find_TFolder,%TargetDir%
+Call,OpenDir,%JuncT_Folder%
+
+[---------]
+--------------------------------------------
+
+[JuncTargetImage_Add]
+StrFormat,PATH,%IsoFile%,%IsoFolder%
+StrFormat,CTRIM,%IsoFolder%,\,%IsoFolder%
+//Run,%ScriptFile%,Find_JuncAdd,%IsoFolder%\TargetImage
+Run,%ScriptFile%,Find_JuncAdd,%IsoFolder%\TI
+
+[JuncTargetImage_Remove]
+StrFormat,PATH,%IsoFile%,%IsoFolder%
+StrFormat,CTRIM,%IsoFolder%,\,%IsoFolder%
+//Run,%ScriptFile%,Find_JuncRemove,%IsoFolder%\TargetImage
+Run,%ScriptFile%,Find_JuncRemove,%IsoFolder%\TI
+
+[JuncTargetImage_OpenDirJ]
+StrFormat,PATH,%IsoFile%,%IsoFolder%
+StrFormat,CTRIM,%IsoFolder%,\,%IsoFolder%
+//Call,OpenDir,%IsoFolder%\TargetImage
+Call,OpenDir,%IsoFolder%\TI
+
+[JuncTargetImage_OpenDirT]
+StrFormat,PATH,%IsoFile%,%IsoFolder%
+StrFormat,CTRIM,%IsoFolder%,\,%IsoFolder%
+//Run,%ScriptFile%,Find_TFolder,%IsoFolder%\TargetImage
+Run,%ScriptFile%,Find_TFolder,%IsoFolder%\TI
+Call,OpenDir,%JuncT_Folder%
+
+[----------]
+--------------------------------------------
+
+[JuncIsoFolder_Add]
+StrFormat,PATH,%IsoFile%,%IsoFolder%
+StrFormat,CTRIM,%IsoFolder%,\,%IsoFolder%
+Run,%ScriptFile%,Find_JuncAdd,%IsoFolder%
+
+[JuncIsoFolder_Remove]
+StrFormat,PATH,%IsoFile%,%IsoFolder%
+StrFormat,CTRIM,%IsoFolder%,\,%IsoFolder%
+Run,%ScriptFile%,Find_JuncRemove,%IsoFolder%
+
+[JuncIsoFolder_OpenDirJ]
+StrFormat,PATH,%IsoFile%,%IsoFolder%
+StrFormat,CTRIM,%IsoFolder%,\,%IsoFolder%
+Call,OpenDir,%IsoFolder%
+
+[JuncIsoFolder_OpenDirT]
+StrFormat,PATH,%IsoFile%,%IsoFolder%
+StrFormat,CTRIM,%IsoFolder%,\,%IsoFolder%
+Run,%ScriptFile%,Find_TFolder,%IsoFolder%
+Call,OpenDir,%JuncT_Folder%
+
+[--------]
+--------------------------------------------
+
+[Junc_Copy_Plugin_To_ProjectTemp]
+StrFormat,FILENAME,%ScriptFile%,%ScriptFileName%
+If,Not,ExistFile,%ProjectTemp%,DirMake,%ProjectTemp%
+Call,FileDelete,%ProjectTemp%\%ScriptFileName%
+FileCopy,%ScriptFile%,%ProjectTemp%
+
+[JuncProjectDir_Add]
+Run,%ScriptFile%,Junc_Copy_Plugin_To_ProjectTemp
+Exec,%ProjectTemp%\%ScriptFileName%,JuncProjectDir_Add_E
+
+[JuncProjectDir_Add_E]
+Run,%ScriptFile%,Find_JuncAdd,%ProjectDir%
+
+[JuncProjectDir_Remove]
+Run,%ScriptFile%,Junc_Copy_Plugin_To_ProjectTemp
+Exec,%ProjectTemp%\%ScriptFileName%,JuncProjectDir_Remove_E
+
+[JuncProjectDir_Remove_E]
+Run,%ScriptFile%,Find_JuncRemove,%ProjectDir%
+
+[JuncProjectDirB_Add]
+Run,%ScriptFile%,Junc_Copy_Plugin_To_ProjectTemp
+Exec,%ProjectTemp%\%ScriptFileName%,JuncProjectDirB_Add_E
+
+[JuncProjectDirB_Add_E]
+If,%ProjectName%,Equal,Gena,Run,%ScriptFile%,Find_JuncAdd,%BaseDir%\Projects\Gena-Sweets
+
+[JuncProjectDirB_Remove]
+Run,%ScriptFile%,Junc_Copy_Plugin_To_ProjectTemp
+Exec,%ProjectTemp%\%ScriptFileName%,JuncProjectDirB_Remove_E
+
+[JuncProjectDirB_Remove_E]
+If,%ProjectName%,Equal,Gena,Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\Projects\Gena-Sweets
+
+[JuncProjectDir_OpenDirJ]
+Call,OpenDir,%ProjectDir%
+
+[JuncProjectDir_OpenDirT]
+Run,%ScriptFile%,Find_TFolder,%ProjectDir%
+Call,OpenDir,%JuncT_Folder%
+
+[JuncProjectDir_Add_Bttn]
+If,%ProjectDir_CheckBox%,Equal,True,Run,%ScriptFile%,JuncProjectDir_Add
+If,%ProjectDirB_CheckBox%,Equal,True,Run,%ScriptFile%,JuncProjectDirB_Add
+
+[JuncProjectDir_Remove_Bttn]
+If,%ProjectDir_CheckBox%,Equal,True,Run,%ScriptFile%,JuncProjectDir_Remove
+If,%ProjectDirB_CheckBox%,Equal,True,Run,%ScriptFile%,JuncProjectDirB_Remove
+
+[-----------]
+--------------------------------------------
+
+[JuncRegFactoryHDD_Add]
+Run,%ScriptFile%,Find_JuncAdd,%ProjectTemp%\RegFactoryHDD
+
+[JuncRegFactoryHDD_Remove]
+Run,%ScriptFile%,Find_JuncRemove,%ProjectTemp%\RegFactoryHDD
+
+[JuncRegFactoryHDD_OpenDirJ]
+Call,OpenDir,%ProjectTemp%\RegFactoryHDD
+
+[JuncRegFactoryHDD_OpenDirT]
+Run,%ScriptFile%,Find_TFolder,%ProjectTemp%\RegFactoryHDD
+Call,OpenDir,%JuncT_Folder%
+
+[-----------]
+--------------------------------------------
+
+[JuncYomiD_Add]
+Run,%ScriptFile%,Find_JuncAdd,%BaseDir%\Projects\YomiD
+
+[JuncProjectTemp_Add]
+Run,%ScriptFile%,Find_JuncAdd,%ProjectTemp%
+
+[JuncMLTemp_Add]
+Run,%ScriptFile%,Find_JuncAdd,%BaseDir%\Temp\Macro_Library
+
+[JuncYomiD_Remove]
+Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\Projects\YomiD
+
+[JuncProjectTemp_Remove]
+Run,%ScriptFile%,Find_JuncRemove,%ProjectTemp%
+
+[JuncMLTemp_Remove]
+Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\Temp\Macro_Library
+
+[-----------]
+--------------------------------------------
+
+[BackupRestore_OpenDirJ]
+Call,OpenDir,%GlobalSupport%\%ProjectName%
+
+[BackupRestore_OpenDirT]
+Run,%ScriptFile%,Find_TFolder,%GlobalSupport%\%ProjectName%
+Call,OpenDir,%JuncT_Folder%
+
+[JuncYomiD_OpenDirJ]
+Call,OpenDir,%BaseDir%\Projects\YomiD
+
+[JuncYomiD_OpenDirT]
+Run,%ScriptFile%,Find_TFolder,%BaseDir%\Projects\YomiD
+Call,OpenDir,%JuncT_Folder%
+
+[JuncProjectTemp_OpenDirJ]
+Call,OpenDir,%ProjectTemp%
+
+[JuncProjectTemp_OpenDirT]
+Run,%ScriptFile%,Find_TFolder,%ProjectTemp%
+Call,OpenDir,%JuncT_Folder%
+
+[JuncMLTemp_OpenDirJ]
+Call,OpenDir,%BaseDir%\Temp\Macro_Library
+
+[JuncMLTemp_OpenDirT]
+Run,%ScriptFile%,Find_TFolder,%BaseDir%\Temp\Macro_Library
+Call,OpenDir,%JuncT_Folder%
+
+[------------]
+--------------------------------------------
+
+[BackupRestore_1_Add]
+Run,%ScriptFile%,Find_JuncAdd,%GlobalSupport%\%ProjectName%\BackupRestore_1_Basic_Xerox
+
+[BackupRestore_1_Remove]
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\%ProjectName%\BackupRestore_1_Basic_Xerox
+
+[BackupRestore_1_OpenDirJ]
+Call,OpenDir,%GlobalSupport%\%ProjectName%\BackupRestore_1_Basic_Xerox
+
+[BackupRestore_1_OpenDirT]
+Run,%ScriptFile%,Find_TFolder,%GlobalSupport%\%ProjectName%\BackupRestore_1_Basic_Xerox
+Call,OpenDir,%JuncT_Folder%
+
+[-------------]
+--------------------------------------------
+
+[BackupRestore_3_Add]
+Run,%ScriptFile%,Find_JuncAdd,%GlobalSupport%\%ProjectName%\BackupRestore_3_Components_Xerox
+
+[BackupRestore_3_Remove]
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\%ProjectName%\BackupRestore_3_Components_Xerox
+
+[BackupRestore_3_OpenDirJ]
+Call,OpenDir,%GlobalSupport%\%ProjectName%\BackupRestore_3_Components_Xerox
+
+[BackupRestore_3_OpenDirT]
+Run,%ScriptFile%,Find_TFolder,%GlobalSupport%\%ProjectName%\BackupRestore_3_Components_Xerox
+Call,OpenDir,%JuncT_Folder%
+
+[--------------]
+--------------------------------------------
+
+[BackupRestore_6_Add]
+Run,%ScriptFile%,Find_JuncAdd,%GlobalSupport%\%ProjectName%\BackupRestore_6_Drivers
+
+[BackupRestore_6_Remove]
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\%ProjectName%\BackupRestore_6_Drivers
+
+[BackupRestore_6_OpenDirJ]
+Call,OpenDir,%GlobalSupport%\%ProjectName%\BackupRestore_6_Drivers
+
+[BackupRestore_6_OpenDirT]
+Run,%ScriptFile%,Find_TFolder,%GlobalSupport%\%ProjectName%\BackupRestore_6_Drivers
+Call,OpenDir,%JuncT_Folder%
+
+[---------------]
+--------------------------------------------
+
+[BackupRestore_8_Add]
+Run,%ScriptFile%,Find_JuncAdd,%GlobalSupport%\%ProjectName%\BackupRestore_8_Optimizations
+
+[BackupRestore_8_Remove]
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\%ProjectName%\BackupRestore_8_Optimizations
+
+[BackupRestore_8_OpenDirJ]
+Call,OpenDir,%GlobalSupport%\%ProjectName%\BackupRestore_8_Optimizations
+
+[BackupRestore_8_OpenDirT]
+Run,%ScriptFile%,Find_TFolder,%GlobalSupport%\%ProjectName%\BackupRestore_8_Optimizations
+Call,OpenDir,%JuncT_Folder%
+
+[----------------]
+------------------------------------------------------------------------------------------------------------------------
+
+[Find_JuncAdd]
+Run,%ScriptFile%,Find_TFolder,#1
+//--
+Run,%ScriptFile%,Junc_Process,#1,%JuncT_Folder%
+
+[Find_JuncRemove]
+Run,%ScriptFile%,Find_TFolder,#1
+//--
+Run,%ScriptFile%,JuncRemove_Process,#1,%JuncT_Folder%,Delete
+
+[Find_TFolder]
+//#1 Junc From Folder --> Result Junc Target Folder %JuncT_Folder%
+Set,%JuncT_Folder%,-
+StrFormat,LEFT,%BaseDir%,2,%Base_Drive%
+//StrFormat,Replace,%BaseDir%,%Base_Drive%,"",%Base_FolderN%
+//StrFormat,CTRIM,%Base_FolderN%,\,%Base_FolderN%
+//--
+StrFormat,Replace,#1,%Base_Drive%,"",%TargetN%
+StrFormat,CTRIM,%TargetN%,\,%TargetN%
+Set,%JuncT_Folder%,%Drive_ScrollBox%\%TargetN%
+
+[Junc_Process]
+//#1 Source #2 Target
+Set,%Junc_Process_A_t%,0
+StrFormat,CTRIM,#1,\,#1
+StrFormat,CTRIM,#2,\,#2
+If,ExistFile,#1\DummyFileForPreJuncCheck1.txt,Call,FileDelete,#1\DummyFileForPreJuncCheck1.txt
+If,ExistFile,#2\DummyFileForPreJuncCheck1.txt,Call,FileDelete,#2\DummyFileForPreJuncCheck1.txt
+//If,ExistDir,#1,Begi-n
+//If,ExistDir,#2,FileCreateBlank,#1\DummyFileForPreJuncCheck1.txt
+//En-d
+If,ExistDir,#1,Begin
+If,ExistDir,#2,ShellExecute,Hide,cmd.exe,"/C Echo Test>DummyFileForPreJuncCheck1.txt",#1
+End
+If,ExistFile,#2\DummyFileForPreJuncCheck1.txt,Echo,"Already Junced"
+If,Not,ExistFile,#2\DummyFileForPreJuncCheck1.txt,Set,%Junc_Process_A_t%,1
+If,ExistFile,#1\DummyFileForPreJuncCheck1.txt,Call,FileDelete,#1\DummyFileForPreJuncCheck1.txt
+If,ExistFile,#2\DummyFileForPreJuncCheck1.txt,Call,FileDelete,#2\DummyFileForPreJuncCheck1.txt
+If,%Junc_Process_A_t%,Equal,1,Run,%ScriptFile%,Junc_Process_A,#1,#2,#3,#4,#5,#6,#7,#8,#9
+
+[Junc_Process_A]
+Call,DriveGetFileSystem,#1
+If,%DriveGetFileSystem%,Equal,NoDrive,Call,Echo,"Drive NOT found - #1"
+If,Not,%DriveGetFileSystem%,Equal,NTFS,Begin
+If,Not,%DriveGetFileSystem%,Equal,NoDrive,Call,Echo,"Drive NOT NTFS - #1"
+End
+If,%DriveGetFileSystem%,Equal,NTFS,Begin
+Call,DriveGetFileSystem,#2
+If,%DriveGetFileSystem%,Equal,NoDrive,Call,Echo,"Drive NOT found - #2"
+If,Not,%DriveGetFileSystem%,Equal,NTFS,Begin
+If,Not,%DriveGetFileSystem%,Equal,NoDrive,Call,Echo,"Drive NOT NTFS - #2"
+End
+If,%DriveGetFileSystem%,Equal,NTFS,Begin
+StrFormat,CTRIM,#2,\,#2
+If,Not,#2,Equal,#1,Begin
+//--
+If,Not,ExistDir,#1,DirMake,#1
+System,GETFREESPACE,%Drive_ScrollBox%,%ToDriveFreeSize%
+StrFormat,MULT,%ToDriveFreeSize%,1024
+StrFormat,MULT,%ToDriveFreeSize%,1024
+//50 MB extra ;)
+StrFormat,Dec,%ToDriveFreeSize%,52428800
+//Retrieve,FolderSize,#1,%FromSize%
+_Calculate,DirGetSize('#1'),FromSize
+If,%ToDriveFreeSize%,Bigger,%FromSize%,Begin
+If,Not,ExistDir,#2,DirMake,#2
+//----
+//Folder writeable check - In case of forgetten junction or etc. :) (forgotten junction: junc and remove target drive - junc (folder) still there pointing nothing - not writable)
+If,ExistFile,#1\DummyFileForForgottenJuncCheck.txt,Call,FileDelete,#1\DummyFileForForgottenJuncCheck.txt
+//FileCreateBlank,#1\DummyFileForForgottenJuncCheck.txt
+ShellExecute,Hide,cmd.exe,"/C Echo Test>DummyFileForForgottenJuncCheck.txt",#1
+If,Not,ExistFile,#1\DummyFileForForgottenJuncCheck.txt,Begin
+Call,DirDelete,#1
+DirMake,#1
+FileCreateBlank,#1\DummyFileForForgottenJuncCheck.txt
+End
+If,Not,ExistFile,#1\DummyFileForForgottenJuncCheck.txt,Halt,"Directory is not writable"
+Call,FileDelete,#1\DummyFileForForgottenJuncCheck.txt
+//-
+If,ExistFile,#2\DummyFileForJuncFolderCheck.txt,Call,FileDelete,#2\DummyFileForJuncFolderCheck.txt
+FileCreateBlank,#2\DummyFileForJuncFolderCheck.txt
+If,Not,ExistFile,#2\DummyFileForJuncFolderCheck.txt,Begin
+Call,DirDelete,#2
+DirMake,#2
+FileCreateBlank,#2\DummyFileForJuncFolderCheck.txt
+End
+If,Not,ExistFile,#2\DummyFileForJuncFolderCheck.txt,Halt,"Directory is not writable"
+Call,FileDelete,#2\DummyFileForJuncFolderCheck.txt
+//----
+//--Pre Junc Check
+//-Set,#9,0
+//-If,ExistFile,#1\DummyFileForPreJuncCheck.txt,Call,FileDelete,#1\DummyFileForPreJuncCheck.txt
+//-If,ExistFile,#2\DummyFileForPreJuncCheck.txt,Call,FileDelete,#2\DummyFileForPreJuncCheck.txt
+//FileCreateBlank,#1\DummyFileForPreJuncCheck.txt
+//-ShellExecute,Hide,cmd.exe,"/C Echo Test>DummyFileForPreJuncCheck.txt",#1
+//-If,Not,ExistFile,#2\DummyFileForPreJuncCheck.txt,Set,#9,1
+//-//If,ExistFile,#2\DummyFileForPreJuncCheck.txt,Message,"Already Junced",Information,5
+//-If,ExistFile,#2\DummyFileForPreJuncCheck.txt,Call,Echo,"Already Junced"
+//-If,ExistFile,#1\DummyFileForPreJuncCheck.txt,Call,FileDelete,#1\DummyFileForPreJuncCheck.txt
+//--
+Set,#9,1
+If,#9,Equal,1,Begin
+//Empty TargetDir so we copy all files to empty folder
+Call,DirDelete,#2
+If,ExistDir,#2,Halt,"Can not Delete Directory - #2"
+//DirMake,#2 --> could not create directory
+//DirMake,#2
+System,FILEREDIRECT,OFF
+ShellExecute,Hide,cmd.exe,"/C md #$q#2#$q"
+If,Not,ExistDir,#2,ShellExecute,Hide,cmd.exe,"/C md #$q#2#$q"
+If,Not,ExistDir,#2,ShellExecute,Hide,cmd.exe,"/C md #$q#2#$q"
+If,Not,ExistDir,#2,ShellExecute,Hide,cmd.exe,"/C md #$q#2#$q"
+If,Not,ExistDir,#2,ShellExecute,Hide,cmd.exe,"/C md #$q#2#$q"
+System,FILEREDIRECT,ON
+If,Not,ExistDir,#2,Halt,"Can not Create Directory - #2"
+//--
+Set,#9,Hide
+//Set,#9,Open
+Echo,"Copying Please Wait ...."
+System,FILEREDIRECT,OFF
+Shellexecute,#9,xcopy.exe,"#$q#1\*#$q #$q#2#$q /i /s /e /r /v /k /f /h /y"
+Set,#9,%ExitCode%
+System,FILEREDIRECT,ON
+//Echo,"Xcopy Error Level: #9"
+Call,Echo,"Xcopy Error Level: #9"
+If,Not,#9,Equal,0,Call,Echo,"Xcopy Error Level: #9",Warn,,Message,,Exit
+//--
+//After Delete ML not available (Junc ProjectDir)
+//Call,DirDelete,#1
+System,FILEREDIRECT,OFF
+ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#1#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#1#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#1#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#1#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#1#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#1#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#1#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#1#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#1#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#1#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#1#$q"
+System,FILEREDIRECT,ON
+//--
+//After Delete ML not available (Junc ProjectDir)
+//If,ExistDir,#1,Call,Echo,"#1 NOT Deleted",Warn,,Message,,Exit
+If,ExistDir,#1,Echo,"#1 NOT Deleted",Warn
+If,ExistDir,#1,Echo,"#1 NOT Deleted",Warn
+If,ExistDir,#1,Echo,"#1 NOT Deleted",Warn
+If,ExistDir,#1,Echo,"#1 NOT Deleted",Warn
+If,ExistDir,#1,Echo,"#1 NOT Deleted",Warn
+//--
+If,ExistDir,#1,Begin
+//Revert Back when failure (Active handling ;))
+Echo,"Revert Back"
+Set,#9,Hide
+//Set,#9,Open
+Echo,"Copying Please Wait ...."
+System,FILEREDIRECT,OFF
+Shellexecute,#9,xcopy.exe,"#$q#2\*#$q #$q#1#$q /i /s /e /r /v /k /f /h /y"
+Set,#9,%ExitCode%
+System,FILEREDIRECT,ON
+Echo,"Xcopy Error Level: #9"
+//Call,Echo,"Xcopy Error Level: #9"
+//If,Not,#9,Equal,0,Call,Echo,"Xcopy Error Level: #9",Warn,,Message,,Exit
+System,FILEREDIRECT,OFF
+ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#2#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#2#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#2#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#2#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#2#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#2#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#2#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#2#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#2#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#2#$q"
+If,ExistDir,#1,ShellExecute,Hide,cmd.exe,"/C rd /s /q #$q#2#$q"
+System,FILEREDIRECT,ON
+End
+//--
+If,ExistDir,#1,Message,"#1 NOT Deleted",Error
+If,ExistDir,#1,Exit,"#1 NOT Deleted"
+DirMake,#1
+//--
+//junc -r "#1"
+//junc.exe "#1" "\??\#2"
+If,Not,#1,Equal,%ProjectTemp%,Begin
+If,Not,ExistFile,%ProjectTemp%\Junc.exe,ExtractFile,%ScriptFile%,Folder,Junc.exe,%ProjectTemp%
+Shellexecute,Hide,cmd.exe,"/C junc.exe #$q#1#$q #$q\??\#2#$q",%ProjectTemp%
+Set,#9,%ExitCode%
+End
+Else,Begin
+If,Not,ExistFile,%BaseDir%\Temp\Macro_Library\Junc.exe,ExtractFile,%ScriptFile%,Folder,Junc.exe,%BaseDir%\Temp\Macro_Library
+Shellexecute,Hide,cmd.exe,"/C junc.exe #$q#1#$q #$q\??\#2#$q",%BaseDir%\Temp\Macro_Library
+Set,#9,%ExitCode%
+End
+//Error Level 1 also mean there already junction
+Echo,"Info Junc.exe Error Level: #9"
+//Call,Echo,"Info Junc.exe Error Level: %t%",Warn
+FileCreateBlank,#1\DummyFileForJuncCheck.txt
+//If,ExistFile,#2\DummyFileForJuncCheck.txt,Message,"Junction Successfull",Information,5
+If,ExistFile,#2\DummyFileForJuncCheck.txt,Call,Echo,"Junction Successfull"
+Call,FileDelete,#1\DummyFileForJuncCheck.txt
+End
+End
+Else,Echo,"Not Enough Space to Copy"
+End
+Else,Echo,"You can not junc to same folder"
+End
+End
+
+[JuncRemove_Process]
+//#1 Junc folder #2 Junc Target Folder #3 Delete : Delete Junc Target Folder
+StrFormat,CTRIM,#1,\,#1
+If,ExistDir,#1,Begin
+If,#2,Equal,"",Run,%ScriptFile%,JuncRemove_Process_Action,#1,#2,#3,#4,#5,#6,#7,#8,#9
+Set,%RemoveJunc%,0
+If,Not,#2,Equal,"",Begin
+If,ExistDir,#2,Begin
+Set,%RemoveJunc%,1
+StrFormat,CTRIM,#2,\,#2
+If,Not,#2,Equal,#1,Begin
+//--Pre Junc Check
+Set,#9,0
+If,ExistFile,#1\DummyFileForPreJuncCheck.txt,Call,FileDelete,#1\DummyFileForPreJuncCheck.txt
+If,ExistFile,#2\DummyFileForPreJuncCheck.txt,Call,FileDelete,#2\DummyFileForPreJuncCheck.txt
+//FileCreateBlank,#1\DummyFileForPreJuncCheck.txt
+ShellExecute,Hide,cmd.exe,"/C Echo Test>DummyFileForPreJuncCheck.txt",#1
+//Remove junk - existfile
+If,ExistFile,#2\DummyFileForPreJuncCheck.txt,Set,#9,1
+//If,Not,ExistFile,#2\DummyFileForPreJuncCheck.txt,Message,"Not Junced to that folder",Information,5
+If,Not,ExistFile,#2\DummyFileForPreJuncCheck.txt,Call,Echo,"Not Junced to that folder"
+If,ExistFile,#1\DummyFileForPreJuncCheck.txt,Call,FileDelete,#1\DummyFileForPreJuncCheck.txt
+//--
+Set,#9,0
+//Retrieve,FolderSize,#2,%FromSize%
+_Calculate,DirGetSize('#2'),FromSize
+System,GETFREESPACE,#1,%ToSize%
+StrFormat,MULT,%ToSize%,1024
+StrFormat,MULT,%ToSize%,1024
+//50 MB extra ;)
+StrFormat,Dec,%ToSize%,52428800
+If,%ToSize%,Bigger,%FromSize%,Set,#9,1
+Else,Call,Echo,"Not Enough Space to Copy back and Remove Junc"
+//--
+If,#9,Equal,1,Begin
+//--
+Run,%ScriptFile%,JuncRemove_Process_Action,#1,#2,#3,#4,#5,#6,#7,#8,#9
+//--
+Set,#9,Hide
+//Set,#9,Open
+Echo,"Copying Please Wait ...."
+System,FILEREDIRECT,OFF
+Shellexecute,#9,xcopy.exe,"#$q#2\*#$q #$q#1#$q /i /s /e /r /v /k /f /h /y"
+Set,#9,%ExitCode%
+System,FILEREDIRECT,ON
+//Echo,"Xcopy Error Level: #9"
+Call,Echo,"Xcopy Error Level: #9"
+If,Not,#9,Equal,0,Call,Echo,"Xcopy Error Level: #9",Warn,,Message,,Exit
+//Call,DirDelete,#1
+//If,ExistDir,#1,Call,Echo,"#1 NOT Deleted",Warn,,Message,,Exit
+//DirMake,#1
+//--
+If,#3,Equal,Delete,Call,DirDelete,#2
+End
+Else,Begin
+Call,Echo,"#2 Not Junced to that folder - Removing Junc"
+Run,%ScriptFile%,JuncRemove_Process_Action,#1,#2,#3,#4,#5,#6,#7,#8,#9
+End
+End
+Else,Begin
+Call,Echo,"#1=#2 - Removing Junc"
+Run,%ScriptFile%,JuncRemove_Process_Action,#1,#2,#3,#4,#5,#6,#7,#8,#9
+End
+End
+End
+If,%RemoveJunc%,Equal,0,Begin
+Call,Echo,"#2 Not found - Removing Junc"
+Run,%ScriptFile%,JuncRemove_Process_Action,#1,#2,#3,#4,#5,#6,#7,#8,#9
+End
+End
+
+[JuncRemove_Process_Action]
+//junc -r "#1"
+If,Not,ExistFile,%ProjectTemp%\Junc.exe,ExtractFile,%ScriptFile%,Folder,Junc.exe,%ProjectTemp%
+Shellexecute,Hide,cmd.exe,"/C junc.exe -r #$q#1#$q",%ProjectTemp%
+Set,#9,%ExitCode%
+Echo,"Info Junc.exe Remove Error Level: #9"
+Echo,"Info Junc.exe Remove Error Level: #9"
+Echo,"Info Junc.exe Remove Error Level: #9"
+Echo,"Info Junc.exe Remove Error Level: #9"
+Echo,"Info Junc.exe Remove Error Level: #9"
+//After Delete ML not available (Junc ProjectDir)
+//Call,Echo,"Info Junc.exe Remove Error Level: #9"
+//Call,Echo,"Info Junc.exe Remove Error Level: #9",Warn
+If,Not,ExistDir,#1,DirMake,#1
+
+[-----------------------------------Gui---------]
+//Gui---------
+
+[Show_Second_Gui]
+System,CURSOR,Wait
+Run,%scriptfile%,Second_Gui
+System,RefreshInterface
+System,CURSOR,Normal
+
+[Show_First_Gui]
+System,CURSOR,Wait
+Run,%scriptfile%,First_Gui
+//-
+Set,%IsoFolder_CheckBox%,False,Permanent
+Set,%ProjectDir_CheckBox%,False,Permanent
+Set,%ProjectDirB_CheckBox%,False,Permanent
+Set,%RegFactoryHDD_CheckBox%,False,Permanent
+Set,%YomiD_CheckBox%,False,Permanent
+Set,%ProjectTemp_CheckBox%,False,Permanent
+Set,%MLTemp_CheckBox%,False,Permanent
+Set,%BackupRestore_1_CheckBox%,False,Permanent
+Set,%BackupRestore_3_CheckBox%,False,Permanent
+Set,%BackupRestore_6_CheckBox%,False,Permanent
+Set,%BackupRestore_8_CheckBox%,False,Permanent
+//-
+System,RefreshInterface
+System,CURSOR,Normal
+
+[Second_Gui]
+Run,%ScriptFile%,Show-Hide-First_Gui,False
+Run,%ScriptFile%,Show-Hide-Second_Gui,True
+
+[First_Gui]
+Run,%ScriptFile%,Show-Hide-Second_Gui,False
+Run,%ScriptFile%,Show-Hide-First_Gui,True
+
+[Show-Hide-Second_Gui]
+Echo,"Changing Interface"
+Set,%BackupRestore_1_CheckBox%,False,PERMANENT
+Set,%BackupRestore_3_CheckBox%,False,PERMANENT
+Set,%BackupRestore_6_CheckBox%,False,PERMANENT
+Set,%BackupRestore_8_CheckBox%,False,PERMANENT
+Set,%IsoFolder_CheckBox%,False,PERMANENT
+Set,%ProjectDir_CheckBox%,False,PERMANENT
+Set,%ProjectDirB_CheckBox%,False,PERMANENT
+Set,%RegFactoryHDD_CheckBox%,False,PERMANENT
+Set,%YomiD_CheckBox%,False,PERMANENT
+Set,%ProjectTemp_CheckBox%,False,PERMANENT
+Set,%MLTemp_CheckBox%,False,PERMANENT
+//
+Visible,%BackupRestore_Bevel%,#1,PERMANENT
+//--
+Visible,%BackupRestore_1_CheckBox%,#1,PERMANENT
+Visible,%BackupRestore_3_CheckBox%,#1,PERMANENT
+Visible,%BackupRestore_6_CheckBox%,#1,PERMANENT
+Visible,%BackupRestore_8_CheckBox%,#1,PERMANENT
+//--
+Visible,%BackupRestore_JButton%,#1,PERMANENT
+Visible,%BackupRestore_JOpendirButton%,#1,PERMANENT
+Visible,%BackupRestore_RButton%,#1,PERMANENT
+Visible,%BackupRestore_ROpendirButton2%,#1,PERMANENT
+//--
+Visible,%Target_JButton%,#1,PERMANENT
+Visible,%Target_JOpendirButton%,#1,PERMANENT
+Visible,%Target_RButton%,#1,PERMANENT
+Visible,%Target_ROpendirButton2%,#1,PERMANENT
+//--
+Visible,%TargetImage_JButton%,#1,PERMANENT
+Visible,%TargetImage_JOpendirButton%,#1,PERMANENT
+Visible,%TargetImage_RButton%,#1,PERMANENT
+Visible,%TargetImage_ROpendirButton2%,#1,PERMANENT
+//--
+Visible,%IsoFolder_CheckBox%,#1,PERMANENT
+Visible,%IsoFolder_JButton%,#1,PERMANENT
+Visible,%IsoFolder_JOpendirButton%,#1,PERMANENT
+Visible,%IsoFolder_RButton%,#1,PERMANENT
+Visible,%IsoFolder_ROpendirButton2%,#1,PERMANENT
+//--
+Visible,%ProjectDir_CheckBox%,#1,PERMANENT
+Visible,%ProjectDirB_CheckBox%,#1,PERMANENT
+Visible,%ProjectDir_JButton%,#1,PERMANENT
+Visible,%ProjectDir_JOpendirButton%,#1,PERMANENT
+Visible,%ProjectDir_RButton%,#1,PERMANENT
+Visible,%ProjectDir_ROpendirButton%,#1,PERMANENT
+//--
+Visible,%RegFactoryHDD_CheckBox%,#1,PERMANENT
+Visible,%RegFactoryHDD_JButton%,#1,PERMANENT
+Visible,%RegFactoryHDD_JOpendirButton%,#1,PERMANENT
+Visible,%RegFactoryHDD_RButton%,#1,PERMANENT
+Visible,%RegFactoryHDD_ROpendirButton%,#1,PERMANENT
+//--
+Visible,%YomiD_CheckBox%,#1,PERMANENT
+Visible,%YomiD_JButton%,#1,PERMANENT
+Visible,%YomiD_JOpendirButton%,#1,PERMANENT
+Visible,%YomiD_RButton%,#1,PERMANENT
+Visible,%YomiD_ROpendirButton%,#1,PERMANENT
+//--
+Visible,%ProjectTemp_CheckBox%,#1,PERMANENT
+Visible,%ProjectTemp_JButton%,#1,PERMANENT
+Visible,%ProjectTemp_JOpendirButton%,#1,PERMANENT
+Visible,%ProjectTemp_RButton%,#1,PERMANENT
+Visible,%ProjectTemp_ROpendirButton%,#1,PERMANENT
+Visible,%ProjectTemp_Delete_Button%,#1,PERMANENT
+//--
+Visible,%MLTemp_CheckBox%,#1,PERMANENT
+Visible,%MLTemp_JButton%,#1,PERMANENT
+Visible,%MLTemp_JOpendirButton%,#1,PERMANENT
+Visible,%MLTemp_RButton%,#1,PERMANENT
+Visible,%MLTemp_ROpendirButton%,#1,PERMANENT
+//--
+Visible,%chkdsk_F_Drive_Button%,#1,PERMANENT
+//--
+Visible,%pButton_Show_First_Gui%,#1,PERMANENT
+
+[Show-Hide-First_Gui]
+//--
+Visible,%pButton_Show_Second_Gui%,#1,PERMANENT
+
+[-----------------------------------Gui----------]
+//Gui---------
+
+[FreeSpace]
+Set,%DriveExists%,0
+If,ExistDir,%Drive_ScrollBox%,Begin
+System,GETFREESPACE,%Drive_ScrollBox%,%freeMB%
+_Calculate,"%freeMB% / 1024",freeGB
+StrFormat,REPLACE,%freeGB%,-,"",%t%
+If,Not,%freeGB%,Equal,%t%,Begin
+//StrFormat,Split,%freeGB%,-,1,%freeGBM%
+//StrFormat,Split,%freeGB%,e,2,%freeGBX%
+_Calculate,"Round(%freeGB%#$c2)",freeGB
+End
+//------------
+StrFormat,REPLACE,%freeMB%,.,"",%t%
+If,Not,%freeMB%,Equal,%t%,Begin
+StrFormat,Split,%freeMB%,.,1,%freeMB1%
+StrFormat,Split,%freeMB%,.,2,%freeMB2%
+StrFormat,Left,%freeMB2%,2,%freeMB2b%
+//-
+Set,%freeMBTFSpace%,%freeMB1%.%freeMB2b%
+End
+Else,Set,%freeMBTFSpace%,%freeMB%
+//----
+StrFormat,REPLACE,%freeGB%,.,"",%t%
+If,Not,%freeGB%,Equal,%t%,Begin
+StrFormat,Split,%freeGB%,.,1,%freeGB1%
+StrFormat,Split,%freeGB%,.,2,%freeGB2%
+StrFormat,Left,%freeGB2%,2,%freeGB2b%
+//-
+Set,%freeGBTFSpace%,%freeGB1%.%freeGB2b%
+End
+Else,Set,%freeGBTFSpace%,%freeGB%
+//----
+Set,%DriveExists%,1
+//Message,"%Drive_ScrollBox%== FreeSpace: #$x#$x%freeMBTFSpace% MB#$x#$x%freeGBTFSpace% GB",Information
+End
+//-------------------------------------------[TargetSize]
+Set,%TargetFExists%,0
+If,ExistDir,%Drive_ScrollBox%,Begin
+Run,%ScriptFile%,Find_TFolder,%BaseDir%
+If,ExistDir,%JuncT_Folder%,Begin
+_Calculate,DirGetSize('%JuncT_Folder%'),freebyte
+_Calculate,"%freebyte% / 1024",freeKB
+StrFormat,REPLACE,%freeKB%,-,"",%t%
+If,Not,%freeKB%,Equal,%t%,Begin
+//StrFormat,Split,%freeKB%,-,1,%freeKBM%
+//StrFormat,Split,%freeKB%,e,2,%freeKBX%
+_Calculate,"Round(%freeKB%#$c2)",freeMB
+End
+_Calculate,"%freeKB% / 1024",freeMB
+StrFormat,REPLACE,%freeMB%,-,"",%t%
+If,Not,%freeMB%,Equal,%t%,Begin
+//StrFormat,Split,%freeMB%,-,1,%freeMBM%
+//StrFormat,Split,%freeMB%,e,2,%freeMBX%
+_Calculate,"Round(%freeMB%#$c2)",freeMB
+End
+_Calculate,"%freeMB% / 1024",freeGB
+StrFormat,REPLACE,%freeGB%,-,"",%t%
+If,Not,%freeGB%,Equal,%t%,Begin
+//StrFormat,Split,%freeGB%,-,1,%freeGBM%
+//StrFormat,Split,%freeGB%,e,2,%freeGBX%
+_Calculate,"Round(%freeGB%#$c2)",freeGB
+End
+//------------
+StrFormat,REPLACE,%freeMB%,.,"",%t%
+If,Not,%freeMB%,Equal,%t%,Begin
+StrFormat,Split,%freeMB%,.,1,%freeMB1%
+StrFormat,Split,%freeMB%,.,2,%freeMB2%
+StrFormat,Left,%freeMB2%,2,%freeMB2b%
+//-
+Set,%freeMBTSize%,%freeMB1%.%freeMB2b%
+End
+Else,Set,%freeMBTSize%,%freeMB%
+//----
+StrFormat,REPLACE,%freeGB%,.,"",%t%
+If,Not,%freeGB%,Equal,%t%,Begin
+StrFormat,Split,%freeGB%,.,1,%freeGB1%
+StrFormat,Split,%freeGB%,.,2,%freeGB2%
+StrFormat,Left,%freeGB2%,2,%freeGB2b%
+//-
+Set,%freeGBTSize%,%freeGB1%.%freeGB2b%
+End
+Else,Set,%freeGBTSize%,%freeGB%
+//----
+Set,%TargetFExists%,1
+//Message,"'%JuncT_Folder%'== Size: #$x#$x%freeMBTSize% MB#$x#$x%freeGBTSize% GB",Information
+End
+End
+//--
+If,%DriveExists%%TargetFExists%,Equal,00,Message,"%Drive_ScrollBox% #$x#$x NOT FOUND",Information
+If,%DriveExists%%TargetFExists%,Equal,11,Message,"%Drive_ScrollBox% (Target Drive)  Free Space: #$x#$x%freeGBTFSpace% GB    ( %freeMBTFSpace% MB )#$x#$x#$x#$x'%JuncT_Folder%'  (Target Folder) Size: #$x#$x%freeGBTSize% GB    ( %freeMBTSize% MB )",Information
+If,%DriveExists%%TargetFExists%,Equal,10,Message,"%Drive_ScrollBox% (Target Drive)  Free Space: #$x#$x%freeGBTFSpace% GB    ( %freeMBTFSpace% MB )",Information
+
+[RemoveAllRD]
+Run,%ScriptFile%,Find_TFolder,%BaseDir%
+If,ExistDir,%JuncT_Folder%,Begin
+_Calculate,DirGetSize('%JuncT_Folder%'),freebyte
+If,Not,%freebyte%,Equal,0,Begin
+Echo,"Removing Project Folders"
+Run,%ScriptFile%,Process_Remove
+Run,%ScriptFile%,Find_TFolder,%BaseDir%
+_Calculate,DirGetSize('%JuncT_Folder%'),freebyte
+If,Not,%freebyte%,Equal,0,Begin
+Echo,"Removing Out of Project Folders"
+Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\Target\Gena
+Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\Target\Win7PESE
+Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\Target\Win8.1SE
+Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\Target\Win8PESE
+Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\Target\Win10PESE
+Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\ISO
+Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\ISO\TargetImage
+Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\ISO\TI
+Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\Projects\YomiD
+//-
+Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\Temp\Macro_Library
+Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\Temp\Gena
+Run,%ScriptFile%,Find_TFolder,%BaseDir%
+_Calculate,DirGetSize('%JuncT_Folder%'),freebyte
+If,Not,%freebyte%,Equal,0,Begin
+Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\Temp\Win7PESE
+Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\Temp\Win8.1SE
+Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\Temp\Win8PESE
+Run,%ScriptFile%,Find_JuncRemove,%BaseDir%\Temp\Win10PESE
+End
+//-
+Run,%ScriptFile%,Find_TFolder,%BaseDir%
+_Calculate,DirGetSize('%JuncT_Folder%'),freebyte
+If,Not,%freebyte%,Equal,0,Begin
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Gena\BackupRestore_1_Basic_Xerox
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Gena\BackupRestore_3_Components_Xerox
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Gena\BackupRestore_6_Drivers
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Gena\BackupRestore_8_Optimizations
+//-
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Win7PESE\BackupRestore_1_Basic_Xerox
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Win7PESE\BackupRestore_3_Components_Xerox
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Win7PESE\BackupRestore_6_Drivers
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Win7PESE\BackupRestore_8_Optimizations
+//-
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Win8.1SE\BackupRestore_1_Basic_Xerox
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Win8.1SE\BackupRestore_3_Components_Xerox
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Win8.1SE\BackupRestore_6_Drivers
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Win8.1SE\BackupRestore_8_Optimizations
+//-
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Win8PESE\BackupRestore_1_Basic_Xerox
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Win8PESE\BackupRestore_3_Components_Xerox
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Win8PESE\BackupRestore_6_Drivers
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Win8PESE\BackupRestore_8_Optimizations
+//-
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Win10PESE\BackupRestore_1_Basic_Xerox
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Win10PESE\BackupRestore_3_Components_Xerox
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Win10PESE\BackupRestore_6_Drivers
+Run,%ScriptFile%,Find_JuncRemove,%GlobalSupport%\Win10PESE\BackupRestore_8_Optimizations
+//---
+Run,%ScriptFile%,Find_TFolder,%BaseDir%
+_Calculate,DirGetSize('%JuncT_Folder%'),freebyte
+If,Not,%freebyte%,Equal,0,Begin
+//---> Can be expanded when required
+//-
+End
+End
+End
+End
+//----
+Run,%ScriptFile%,Find_TFolder,%BaseDir%
+_Calculate,DirGetSize('%JuncT_Folder%'),freebyte
+If,%freebyte%,Equal,0,Call,DirDelete,%JuncT_Folder%
+//----
+If,Not,ExistDir,%JuncT_Folder%,Message,"All Junctions And Directory Removed #$x (Target Junction Folder #$x %JuncT_Folder% #$x Completely Removed) #$x#$x#$x :)",Information,5
+If,Not,ExistDir,%JuncT_Folder%,Echo,"All Junctions And Directory Removed #$x (Target Junction Folder #$x %JuncT_Folder% #$x Completely Removed) #$x#$x#$x :)"
+//-
+If,ExistDir,%JuncT_Folder%,Begin
+Message,"Did not Delete Junction folder #$x %JuncT_Folder% #$x There are %freebyte% bytes #$x of files.",Error
+End
+End
+Else,Message,"%JuncT_Folder% #$x no such folder",Information,5
+
+[Delete_Target_P_B]
+Call,DirDeleteE,%TargetDir%
+
+[Delete_TargetImage_P_B]
+StrFormat,PATH,%IsoFile%,%IsoFolder%
+StrFormat,CTRIM,%IsoFolder%,\,%IsoFolder%
+If,%OSFamily%,Equal,NT6,Call,DirDeleteE,%IsoFolder%\TI
+
+[Delete_ProjectTemp_P_B]
+Call,DirDeleteE,%ProjectTemp%
+
+[chkdsk_F_Drive_P_B]
+If,ExistDir,%Drive_ScrollBox%,Run,%ScriptFile%,chkdsk_F_Drive_P
+
+[chkdsk_F_Drive_P]
+System,FILEREDIRECT,OFF
+Echo,"chkdsk.exe %Drive_ScrollBox%"
+ShellExecute,Open,cmd.exe,"/K chkdsk.exe %Drive_ScrollBox%"
+System,FILEREDIRECT,ON
+
+[AuthorEncoded]
+Graphicloads-Colorful-Long-Shadow-Arrow-up-down_0_048048.ico=1751,2335
+Logo=Graphicloads-Colorful-Long-Shadow-Arrow-up-down_0_048048.ico
+
+[EncodedFile-AuthorEncoded-Graphicloads-Colorful-Long-Shadow-Arrow-up-down_0_048048.ico]
+lines=0
+0=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
+
+[InterfaceEncoded]
+opendir.bmp=571,762
+trash.bmp=867,1156
+DoubleJDesignRavenna3dArrowDown0016016.bmp=622,830
+BokehliciaCaptivaSoftwareupload0016016.bmp=676,902
+AmperossQetto2Move0016016.bmp=893,1191
+
+[EncodedFile-InterfaceEncoded-opendir.bmp]
+lines=0
+0=eJyVkt1LU3EYx382esMuBFEKE8GLLL0IbyYhpEUI4aKytilTFN1xOrvxohpI9/0FlYESXUR2EXmxi4S9hYF4IZhOSdZMzJdtx+HwvO1sh2/P8cyxYFh9+TzPxXm+v+9z+J1z847ZxA5lprpMVZarEnbeGNC8vNSoI+E/5Z6YZs++Mk+QPTnkaaiAo4ee0LVPEcN/4tViTRjuNB7Jeh/cAxfPcEnNtY8hAW4ZwwqGVbCxL3k/D5zxC71x9AjoTsGRgG0jbY2K1siBfV2ybyjd2xkHr7HHIcO/CZh8ApdEfwIDKXASnAr6BDh4dG5mbVHJui727ar0VuQ/924tCtyNoTwgGFQGdZyxrHMfLgUuFYMShg4wIOrhVTNb3zVYdtCbQD+vQ4sqQwKhH/cLFQGx1C+W+EQWlC/Nyw0LqRUVt7fQtZPDvgtrDB2JHD1JnJrl8/dpjqjLipb3P9zG/Ti+qQirWJY1Yi0L06pW6F+QtJZf+grCEkOYrus5q/iJ06tgiwoLZ+0v3vyRnwEdoailtG6ufllVN1FXO36x6Pcd8wYogXJOrqDsB66+rTdPtV7/aGmcar0weeX4f6N2srrpQ/ON6Xvt3i7q9e+bz74uvqVQt7wPOn0c9b86DbV9tjlnR6n/o39kzmNQdPoblHVTL3ic484vSM1LySzSS8otYBgFIw6YMUPoD4zY5WddWriPgQkAk7cIYWOapDwBAAAAAgAAACcAAADwAQAAAAAAAAEAAAAAAAAAAAAAAA
+
+[EncodedFile-InterfaceEncoded-trash.bmp]
+lines=0
+0=eJxtlNtTEnEUx2umtx5qtKb+hN7MyUxCELxfkBRvjToTXkYTu3i3tJdq8sHeLEfNLBJSQcVLKCy7wCIsKyiwKOEFZyjxkoOvNl7GqRMk4yBnvmdn9/c7n99v95zf2fjMmgvnfBYNfgM8HDwM/Py5677xuzAfdtHvJ/bnxA4PD+fnLQa9ISA9XA2EwW96g81GHR8fB+JPs4gSmSXJr2KxqF8klUjFItHQ4CA8SoaGxCKxuF9ktVhQFXqWXV5edq2ucjOzxmSytjdtly+Fl5WWYyjKyci8euVa5/vOT31997hZjkWHx+MJYmdnTdNT8iePnxoNxNLS0s2IyMmJSSNBdHd1M+gMi8UyZzYX3i9UIciCfSGIJY3klFxeW1OrVCitVuvtqGjZqAxBkK6uLjYrXq/XazQa/gM+qlLZKXswS84qpqcb6uoh3mazxdyJGZONQeSHnp7EhETIFK7FS/il8BUhWUSpbGpsUiEqirLRafSJ8XFgP/b2piQlQ65xHC8vK9eoMSoUC9/yvPkZsHaKYjKY3yYnIauQovTUNIIw6HC8sqJCq1GH3BdDVS9aWxUKBUVRbBZbLpdD1YSfhVxOJlRaq9FWCwS4VhtyXzWGtba0WC3WNZeLHcdSKpWwyBehkJOe7nA4FhcWH1ZWzujws6zJZNLP6JITk2CFdx0dkRERjQ0NpJEo4fOjbkUJhULZ6AgzNhZGHI7vQSyKYktOZ052dg6Pl8vLKS4qys/Ny8nmFeTnFxcW5fJ4MFWQl+daXcEw9WkWjvGGZ10qkQyDpFLQiE/DJ5LCGZUMSeCMDgysrbnMJnOAJUlya2uzuqqKHhMTx2CAWMw4dtx/sZhM/yCdRnskEKyurECDBNj9/X14591db0N9HWSGm8FJT01N8yslBe65nH8jr1+93N7ehsLt7f0O6iMdroM1obhbm5vNTY0MOj0pIT6WRnvb3r65sWG32ZxOp5EwhuxBsJ1fO263G0Ox9fWfkFJoSWiHDY9HrVa73T+8Xu/p4CDWbwcHB2bzHEEYYRfCQEATHR0dnQ3z/Tn+Ah/33RZ4nOMsKUosztBLyi1gGAUjEBSwQGgpZuzyyx1fajMwAQDHowYo0vtiWAEAAAACAAAAJQAAABoDAAAAAAAAAQAAAAAAAAAAAAAA
+
+[EncodedFolders]
+Folder
+
+[Folder]
+junc.exe=2639,3519
+Q Ramdisk Folders.cmd=451,602
+2017-02-24_233132.png=13437,17916
+2017-02-24_233132.txt=1375,1834
+
+[EncodedFile-Folder-junc.exe]
+lines=0
+0=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
+
+[DownloadXXX]
+Call,DownloadXQ,%ScriptFile%
+StrFormat,PATH,%ScriptFile%,%t%
+//If Direct -> %BaseDir%\Projects\Yomi\Build\
+//If Linked -> Projects\Yomi\Build\
+StrFormat,Replace,%t%,\Yomi\Build\,,%t2%
+If,Not,%t%,Equal,%t2%,IniWrite,%ScriptFile%,Main,Title,"Junction Y"
+
+[UploadXXX]
+If,QUESTION,"Are you Sure you want to UPLOAD ?",10,False,Run,%ScriptFile%,UploadXXX_Main
+Else,Halt,"UPLOAD Cancelled"
+
+[UploadXXX_Main]
+//Web1=http://gena.cwcodes.net/Projects/Gena/Basic/Build/2%20-%20t_Junc.script
+//Web2=http://yomi.cwcodes.net/Yomi/Build/0-preconfig_t_Junc.script
+//Web3=http://win81se.cwcodes.net/Projects/Win8.1SE/Build/0-preconfig_t_Junc.script
+//Web4=http://w8pese.cwcodes.net/Projects/Win8PESE/Build/0-preconfig_t_Junc.script
+//Web5=http://w7pese.cwcodes.net/Projects/Win7PESE/Build/0-preconfig_t_Junc.script
+Call,DirDeleteMake,%ProjectTemp%\Upload_File_X_Junction_Plugin
+IniRead,%ScriptFile%,Main,WebRootFile_Gena,%WebRootFile_Gena%
+FileCopy,%ScriptFile%,%ProjectTemp%\Upload_File_X_Junction_Plugin\%WebRootFile_Gena%
+IniRead,%ScriptFile%,Main,WebRootFile,%WebRootFile_R%
+FileCopy,%ScriptFile%,%ProjectTemp%\Upload_File_X_Junction_Plugin\%WebRootFile_R%
+//-
+Call,UploadX,%ProjectTemp%\Upload_File_X_Junction_Plugin\%WebRootFile_Gena%
+//-
+Call,UploadXMulti,%ProjectTemp%\Upload_File_X_Junction_Plugin\%WebRootFile_R%,%ProjectTemp%\Upload_File_X_Junction_Plugin\%WebRootFile_R%||WebRoot
+
+[Settings_Default]
+IniWrite,%ScriptFile%,Main,Selected,False
+IniWrite,%ScriptFile%,Main,Title,Junction
+Run,%ScriptFile%,Show_First_Gui
+Set,%Target_CheckBox_NT6%,True,Permanent
+Set,%Target_CheckBox%,True,Permanent
+Set,%TargetImage_CheckBox%,True,Permanent
+
+[Settings_Default_Yomi]
+IniWrite,%ScriptFile%,Main,Title,"Junction Y"
+
+[WebRootSub]
+WebRoot1=w7pese.cwcodes.net
+WebRoot2=w8pese.cwcodes.net
+WebRoot3=win81se.cwcodes.net
+WebRoot4=yomi.cwcodes.net
+WebRootSub1=Projects/Win7PESE
+WebRootSub2=Projects/Win8PESE
+WebRootSub3=Projects/Win8.1SE
+WebRootSub4=Yomi
+
+[EncodedFile-InterfaceEncoded-DoubleJDesignRavenna3dArrowDown0016016.bmp]
+lines=0
+0=eJzNk09Ik2Ecxw06BF2KqG5ih1EgYZZu7+v7vnu3d++2MpelRFHgQZEaJLVIXSxrW4Wauf7Nwha2rQ7dOgT9IQT1EkQHi+hSHfRSUZrMcp389PjSoUib3vrB9/I8fD78fr+Hxwi0LS+yyi6ySWSVyGqRZUUl1rnr1/3vBfy3+TTxkabuAzx4dp+lsu/G31LRXIrjaCmeVjtfpj4v2jH+YQwpWIYc3orctgUptJkT/UcWxc/1rLXYqYpKqGcklEglcns5DuF48uLhPx2TUxOYIRWlU8PZraOdU1GjMsop4RO9+DucfM1NzuvIfctR3Wai9hq4rvrREybOCy608xpqrAqlQzhObiOSbv2Ln8nPsDvsZ33dSoob1mE7XIIsetAvCUePG63TiRpXUE47rJ0MvRz8wzH9fZqR0SHSj1LUhn2s8a6gMi7hTm7HddmLftHA2aVT2mJjY3Mx7naJ/I/8vHN0Zc5avKNLw+gP4O7bgeuKD73XQyDqI5QM8ur96IJ7jKUiFi8nDDwDezBuCsf1amsnA4Opgm8Y7jtu8UrSj3lnL+btOjypXRg3dpIdThfkjyWCFu9M1eC7tx/vXeFIC8etWjKL4IPdTRZfFqtAvua1PJ5sPWamnuxIpiD/9Plj4ukIh3oaqGk3KG+0sWHfWhp7DvJm7PWS/9FcZmdnF+R+AlbU23p4nNNyyS9Nykn1ckktzkzPC0osS83LSzROcSwqyi93yS/PMzAwNAMivaTcAoZRMPxAGQuEZmPCLu9y8YwcAxMAHjMRfb+2diEBAAAAAgAAAEQAAAAGAgAAAAAAAAEAAAAAAAAAAAAAAA
+
+[EncodedFile-InterfaceEncoded-BokehliciaCaptivaSoftwareupload0016016.bmp]
+lines=0
+0=eJytU21LWmEYbrAfsP0De4H2pRcqRq+0RllUZkav1O+YIH2JPvUhKKJfUE3aaCNQQR3pYWDTPCpBMKUxSczjZDB0Q8UPV/d9L0tdg33YAxfn5nq5n+c85z4vDa8e18l6TnhGeEJ4SnhUpxP+xa1euQD8V5RKJeTzeeRyOWSzWQHXzLH2t1yxWEQikYDb7cXu7iHW1/exuron4Jo51tjD3tqsw3GC+fn36O39hJ6eh8Eae9hb2SMYjGB42Iu+Pv8/gb2cKb+v2fwGAwOBGvhpTzfhg9S1utn8FuW7MplOMDQUwMhIgHrfY3Mzio2Nz1Uce9jLGc5mMhni/WhuPoROt4/6+td3ODpKwGqNV3HsYS9nOBuLfUFLyzG6ulzEnVXB4/kOpzPzB89eznD24iKKxkar9NPrg7fwYG7OBp/vGxRFw+ysDaOjnjudvZzhbDR6iY4OO/V0YHJSxdiYiq2trygUSri+zuLq6ofU29tx0djT2WmTDGdTqbRw3d1O+jYfMTGhYno6TL1zKC+uTaawaDrdHtrajiWjaWn5BgsLfhgMIZoPL6amQlKvrJzT/gUkkwUsL58Lx2hoOJAnZ8rzbLF4YTSG6d18dAY3nfMUg4MK7RmULGu/oUqea4tFqZi/JGZmwnJGgyEg8zU+fip3otcrdJcRusMQ2tt5vl3iVdVU1T9gt6exuMi+exiNZ2htfYempgNBf78LS0sRsPehf1DTfoq2sxPH2tolnTEm4Jo51tLpX1XZG70Y6I54nNNyys9OzcjJTM5MdE4sKMksSwzOTyspTyxKLS3IyU9MMTAwNAMivaTcAoZRMPxAGQuEtmHCLs9kcFmVgQkAJ9URXc7wHxQBAAAAAgAAAEQAAAA8AgAAAAAAAAEAAAAAAAAAAAAAAA
+
+[CompareEditXXX]
+Call,CompareEdit
+
+[EncodedFile-InterfaceEncoded-AmperossQetto2Move0016016.bmp]
+lines=0
+0=eJxtk1lIVFEYxw16agEVzTRncRtt0cx0NCu0QlsgyyCih7Cgh6KFNgQzSsqnFohUEm3FlqmsVGxxxoxSyYkpTcctsiKXtCZ1mPXee878++5o4YMf/DjfnXN+//sdmLt2s3amj7e0RAzhO8kMH7XPv/KfPcF0NXd7RXRg3ufCoDMD+nkFQ8Z5BYOTDBmDCgYNgXlfCudsq4yZzg3I7ToSfMHmVJQBilLi6pT1X097IZdsroBc87GpblB+zwHVNUBJ50JLBAQUSVhQIkJB/X+KBYQWCd4s1XUgKL/3kOz6HTYpQ4scbq9fLsL/ooAV50ahueKE8oYI1TWBoLVcgLKMKJWf6T1XHILv8WaVothyMlwHqG+KmHVJxKHbFnjs49j5zAnf2xyqexLC74hewm6JdE6AmjLDH1BGseVU2E17VeRjIIBmPFhhASQnnneK0Fy2IYaIKHEi9C6DXxmDWscQeY+yKkREPpLfaa+JuO/Wh5C/9bEd4C7INWyxw/bbCmnUiuZeK9bpHDhfY0FkuQvKSo6ohxKiqoCIu+76qEp3XUQtkFDL0DYm2x4863bjdAdwthfY0QKsMYjgYNDTAQVlqJ9yLHwBaB66DdFPhbol9TRLDUPsS4bWMQ+sYw6kVjuwhmbaXzuOvTVWVJtpPkqpbx/DYp0b0a+AmGrBsKhWMMS+AWL1dDcipZGhctiDHSYRbRY3OSIhYdwlYaI4cppdCGsAFr8Q6uNeiU/iacalrxkSyI1ropxGCXEtDGs/cmxq50hrlvCkx+G9W/F3DzQNDLITpxerEhrFE0ntwLK3DInvGLTvGZI/0BytHInka0wce9tpDo+E0gEPwuncUkJ2ljeJuUlGzNcamS3pA8iVkEJO6ieOVR2EmXpaN3Zz7PviQbyJPMrXfgSSjcy+2mQPlv+DaR3CrrSvQGon0caxmry0Lo508tJ7KIf6BLqHvLeyC0j/RpiFnKnfQEa3sDujj1syR4CMn0AmsZ76DSMTvfe3X8C6Pv4n0yzsme4bzO6yB2f1s6NZ/VyX9YPVZU+yhcjqlx5kD9FetyNkqvMXP3mcf3ick3XMLUgtyi8uDkwtKck38s0vSzUwMDQDIr2k3AKGUTDMgRkLhFZixi4vra37hIEJABkJC8Gkai7oAQAAAAIAAAA3AAAAIgMAAAAAAAABAAAAAAAAAAAAAAA
+
+[EncodedFile-Folder-Q Ramdisk Folders.cmd]
+lines=0
+0=eJztk8FrgzAUxu+C/0MQvLaVHTaEFdZVRmFsXS10A0Gy5NFmbYyLaWkv+9tntLYeak2htw0Pavx930s+3/P9B0qZYgleIQmY7lCosFTrFHUIp7YVgkIbKtkG7t9sC8hCILd8d23L91O8zkA/wJYpfScUdSly3B+a9hzbCrSgWisX+05l4EfeBLjYwJBJIErInaeLVjKZyzLU/UYe6v+LLhVx+hdw3XIvQkGKaQe2gIwknNa5AcIZRGMpvnIuiz4EZ8/t2BMk2GlhZiy5HQdhYMDddTwzztDP65mA+qzD4qxE8BQTVWTYJXm7+Y2qxmymWM5BnUtmT7TkcqTOpVKjjLwOiZwGR+HruZ3rz6XXiOM5NNrMhFx+QkIWhVk0wGS5TieQ5Q0I8U38mMcsEkhUFr+DFNuGakeXKqqrOBVxXsfpansqf4uJlR71U3ZxOG0oFLeP8VSIldkwl6TpSB9oo8E+0hd511paX78KMoRCeJwTDVQISsxNySzOVnDLz0lJLSrWS85NYRgFIwScZofQeYzY5Z855FUxMAEASPEK9GHjIGcBAAAAAgAAADEAAABuAQAAAAAAAAEAAAAAAAAAAAAAAA
+
+[EncodedFile-Folder-2017-02-24_233132.png]
+lines=4
+0=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
+1=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
+2=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
+3=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
+4=sUTH5dDfRdMn42g4LJY8sPoYqb5ihYjAekTjXK05RQ96jy2f7bm+Ps9KXdzcdP5bG4IiDYngFCmLiXb2Gm6H2z80U4Oa4xlMj66pK6iW3FkycQe7z45aETKXUJk4TjqpoKBgmlaC5dY1jbz8G73bG+arlZzXzEup9O48TwmEMaRkZ3e34S5L3cao7fIry7dOhPOOW0OdOk0Tq++EFGh1tnwEzsk8jHe2vtDdU6MgCJ6735alrmpUuThtwkNEB5/XrV8dNmYuIRmuHKtUAn0pRbsaJwsoFauLMH/ghBSGzAwLC9PS1FxkG/ALfD9cirym9/HFCZbt+PDi2eMFiVS+1Q9vSHia5PKetTFGeuxHYCW6rLlW6Ks/E9HPbzbFic0qBWXXr62Acwcmyf6hdXoMUgXS37kLTf/+JkLtL5r3XS8hcyRJpP4/pFT+b70epDRvRf/DIfUWztvvLz04s8tu/t68BfJHOByeCJ0X9Tc6nX6OsLMU972tOGOXSGLRNat/fUFx08KzV7158+YfKiGUijK7rwJ24vZuvVm9OPbPjfzNgNBK6xOSMDSXTBPd+k8qtwrw9peaNacx2j+0q6RDGc5SfrOnglw11/bq7uKyuHim+tRRxA9v3tWy3OSmjyxogfhPzfluz4rN0Gw5TGj1fCv95e4flGrj/OsV/8EGxf8jI/d35/6/5eKaZOaVZ+7un3q7/g9dHoX/7yTI12R+JeFV/94LX7xj/oHN/28Et+Qe/WLno7M5HoqSiNOkjfWguJEe++5gz6jPZQIgIsz0PVmW86Td205O1a5tunhobirmlZ9grOvXlVqPfZyWec2mBUBjyQj5JWlgko8c9Ph+1fKXN7aiSxPMYsTmzOciS++HbFdRBFthxWUlGVrvgpLARzVESPe+SlbUad/5QO3u8DPAm7fYnb90VMwHw3+h/l8cxP4PteCfHQyO+z+0AJg33P/V1peInV+d989l29llCJbazb9RbZODGu6/3j3RxmrfgHWcVxypjs+9l0Wp1JOFVXrfB2X+lMeX/rHXU5qrJCs8gj/OK0H3hIbvQrAFLSjvhTcbjYJ/qoO2NVQf0PIfLMkGJB1ICtlL5tc/vDLj9SrDfHcVM4fyUnq8O2Y1UIpBwT+zQwZuBpgQxOZNB3P6l6CUv5fhrbWhW2Mh8Sj96heC4UlCKDZ2vEXJih3PWwMsZC5v/KIoo9QnUiopGxYhF8NciLpTzXgtOVXx2XDk8lM4+tFz7IESxCAQsQeiXoD/33gRXPH/t/rTVQrGiZJ7CLk5mQc7/1Yd6tJQsv1yjvR8QPqOgy4RRCUnkexu0rNlIF9PEs+oUK6cspPQNK9aYNz8/orpp9OcIuiKGKILztZ2flyujsI+Cx561AIMBZQpTZ+bCqa6BxfrzM11oFoocUmdfgMHefQUAn6dOGZ6NPvIxT//L9ONvvZ4nBM1MjA01zUw0jUyiTcyNjY0NtIryEtnGAUjBPxyhNAaJtjlvZmdLjIwAQDE7Qf8pjDyygEAAAACAAAAMQAAACg0AAAAAAAAAQAAAAAAAAAAAAAA
+
+[EncodedFile-Folder-2017-02-24_233132.txt]
+lines=0
+0=eJy1mE1v4zYQhu8G/B/mUKDJxatvSwu0hZM4WCO2s7tOsijaHmiZjgnLoktS2fWlv71DinKU/dAqBuSTY868fDgcDsOZsVRwydcKPrF8xT9L+OuBCsl4Dq4zcAZu4Cf+P/3eWXoOnuNGMDs6XHKx54IotB3AKMtAsMeNkiCopOKJrgb93j1+m5Mdhd/gYjrq9/q9y7d/6x/l7+lmu5JbeLOGD2/7vbsNBXXYU+BrUPh9zTIK8iAV3QGTML+7XgyMe+mVkjznCkSRw5KmpJDUeD3xrMDJ0IHloH9cHoCg4YaKfm8veEqlHABYkR05GAWmp0SfZ+8Vkzte5IquEERIhVOPplO4fT+ej6/g3Wh+NR0v4O4W7t5NFvBwO72fjeHT7f30Cn8Zz+FiDJP5w2g6uULPT7zIVnDgBWRsi5wc1lykFMhxGsBg1wj+gLM/38zP4dDvPZRIzzxIryPN9zRHuA3JVxmVWrO+AiIo5PwzBuGJZEzvg9XJyJJmeoEL3L/3VKxpqj6YuC4UeaTgvoXxF7JjOcsfYUkkS19shFSiSFWB6oMBegF4URw7pYmgKRcrCTbKZvev9cATFWzNUpMmkPLdPqPKjAK4CCQe6Y8FABzEWP3YoAL36uDGOtdZl7F8q4cNLqYrSihtQYXgQucIpjz9Ar9MfEdvSunpxl7cvfm7m6vFjd7YlGOEdKIJioHeE8yMHRFb/IVIIFnGMXT4B8tNhi+Z2pG9kWtQX3BhSGom6H8KbhhFSXe4Vr0Bt5q/JW7suR1G16o34Fbzt8WNYr9D3FK9CdfO3xZ36HaYDFa9CdfO3xY3ed1mJJ3mTvLT3HkdbuIFw+5wrXoDbjV/a9w46hLXqDfilvO3LtNO5HZZp0v5xkJtCVoTu10mRCXfSOy+KiXwKoq8Tu9CI998GZYErYl9p8OCXck3EluC9sRhh+eukm8mDl918hLX7TIrrHwTcUXQnjju8F6s5JuJ49fcjG4S+V3+F2rlG4ktQUtiz/H9DqtbJd9AfCRoT5wEnRIb+WbikqAtseuEHd55lXwTsTXBl2Ucu541obkSjL58+E3MyA/flnYJ+NKVulWgpytyo0bL16Q0XPpJmecYm/IFTZkALtgjy0mGy9dB4+KAch+piYSW4WKPr26rArPJ5cfbxX/uYHY/gzMsdf45QqPY0fvFq+tnOt5RJzhV5/rq0nvmCaJTdZzLYFzTGZ6sM47rPPGpOmPPCZ51wpPj416HNZ3IPTnO1+GopuOdvK7Ar8UnOnm/xmHi1HSa47zYsv3etEoKoZtjsMNzRR7xVJAlL5Q5Fy/mkWW/JgqSb86ROWBVQ+d7BlYM/0ae7x4v3eZp9Mq4VEByHONFXu/7+PW+j6RpIZg6wIrKVLA9qsuy9bP4dqSpL5VEEayIIhalXne+rqWyKn47IhW1lU6RZUZ/lXA2u747h4vJ3Wz0HojCKrYsFDX4VbN1g4V0R1YUCUphntt23oseKPrM+XG3iLHT1U3QfwsMZBkSAIi8xA3CEG4uUESZMMttWbnNysB3hk7gBNoAwd3Aj5NyleUwfoZRXA0nUVyW4Now6M0qh3VnTppNPA6Hrl/O/tx/1Ss5LsIYeUE4jLQRT9Niz3CLrVnGy+adRXUjz8FLAA3JE2GZDqrulOolVevFT+AkEQooaraCknRT3Uw6RphWqpRzwyE+AX0bl69MZE3YBCFxQsf/1ur7IP8D1d1vAHicEzUyMDTXNTDSNTKJNzI2NjQ20iupKGEYBSMEuIhDaG5W7PJ1Z23KGJgA1vYHh8IVHZgBAAAAAgAAADAAAAALBQAAAAAAAAEAAAAAAAAAAAAAAA
+

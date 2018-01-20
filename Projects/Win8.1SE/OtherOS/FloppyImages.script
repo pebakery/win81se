@@ -1,0 +1,276 @@
+[Main]
+Title=Floppy-Images
+Type=Plugin
+Author=2aCD
+Description=Add Floppy images to the Bootmanager Menu ( Grub4Dos or Isolinux)
+Credits=http://TheOven.org
+Version=009
+Download_Level=2
+Level=7
+Selected=False
+Mandatory=False
+NoWarning=False
+Contact=http://TheOven.org
+Date=2017.02.01
+Depend=
+Disable=
+Web1=http://w7pese.cwcodes.net/Projects/Win7PESE/OtherOS/FloppyImages.script
+Web2=http://w8pese.cwcodes.net/Projects/Win8PESE/OtherOS/FloppyImages.script
+Web3=http://yomi.cwcodes.net/Yomi/OtherOSY/FloppyImages.script
+Web4=http://win81se.cwcodes.net/Projects/Win8.1SE/OtherOS/FloppyImages.script
+CertifiedBy=
+Certification=
+HistoryNotes01=
+History003=JonF noticable Echo warning in warning swamp
+History004=Lancelot SetOtherOS support added
+History005=ChrisR Rreplace "map" with "map --mem"
+History006=ChrisR Check if floppyImage selected exist and minor things
+History007=ChrisR cosmetics to be similar to ISO images. Fix Open Dir FloppyImage 3, 4
+History008=Lancelot Added DU Buttons - Date:2015.10.31
+History009=Lancelot - Add Compare button - Date:2017.02.01
+
+[Interface]
+FlImg_Bevel1=FlImg_Bevel1,1,12,5,5,546,72
+FlImg_Bevel2=FlImg_Bevel2,1,12,5,83,546,72
+FlImg_Bevel3=FlImg_Bevel3,1,12,5,161,546,72
+FlImg_Bevel4=FlImg_Bevel4,1,12,5,239,546,72
+FlImg_CheckBox1="Enable FloppyImage 1",1,3,10,10,130,18,False
+FlImg_CheckBox2="Enable FloppyImage 2",1,3,10,88,130,18,False
+FlImg_CheckBox3="Enable FloppyImage 3",1,3,10,166,130,18,False
+FlImg_CheckBox4="Enable FloppyImage 4",1,3,10,244,130,18,False
+FlImgTitle_TextBox1="Bootmenu Title",1,0,10,49,160,21,"Floppy 1"
+FlImgTitle_TextBox2="Bootmenu Title",1,0,10,127,160,21,"Floppy 2"
+FlImgTitle_TextBox3="Bootmenu Title",1,0,10,205,160,21,"Floppy 3"
+FlImgTitle_TextBox4="Bootmenu Title",1,0,10,283,160,21,"Floppy 4"
+FlImg_TextLabel1="Select FloppyImage 1",1,1,182,35,120,18,8,Normal
+FlImg_TextLabel2="Select FloppyImage 2",1,1,182,113,120,18,8,Normal
+FlImg_TextLabel3="Select FloppyImage 3",1,1,182,191,120,18,8,Normal
+ISO_TextLabel4="Select FloppyImage 4",1,1,182,269,120,18,8,Normal
+FlImg_FileBox1=%GlobalTemplates%\FloppyImages\FLOPPY_1.IMG,1,13,180,49,314,20,file
+FlImg_FileBox2=%GlobalTemplates%\FloppyImages\FLOPPY_2.IMG,1,13,180,127,314,20,file
+FlImg_FileBox3=%GlobalTemplates%\FloppyImages\FLOPPY_3.IMG,1,13,180,205,314,20,file
+FlImg_FileBox4=%GlobalTemplates%\FloppyImages\FLOPPY_4.IMG,1,13,180,283,314,20,file
+OpenSourceFilesbutton1="Open Dir",1,8,496,47,50,24,OpenSourceFilesDir1,_OpenSourceFilesDir1_,False
+OpenSourceFilesbutton2="Open Dir",1,8,496,125,50,24,OpenSourceFilesDir2,_OpenSourceFilesDir2_,False
+OpenSourceFilesbutton3="Open Dir",1,8,496,203,50,24,OpenSourceFilesDir3,_OpenSourceFilesDir3_,False
+OpenSourceFilesbutton4="Open Dir",1,8,496,281,50,24,OpenSourceFilesDir4,_OpenSourceFilesDir4_,False
+WebLabel_Plugin="Plugin Page",1,10,322,4,55,18,http://TheOven.org/index.php?board=9
+Button_Download=,1,8,381,-1,24,24,DownloadXXX,DoubleJDesignRavenna3dArrowDown0016016.bmp,False,False,_DownloadXXX_,False,"__DOWNLOAD Plugin"
+Button_Upload=,1,8,403,-1,24,24,UploadXXX,BokehliciaCaptivaSoftwareupload0016016.bmp,False,False,_UploadXXX_,False,"__UPLOAD Plugin (Admins Only)"
+Button_CompareEdit=,1,8,426,-1,24,24,CompareEditXXX,AmperossQetto2Move0016016.bmp,False,False,_CompareEditXXX_,False,"__DOWNLOAD and Compare with an Editor"
+
+[Variables]
+
+[Process]
+ReadENV
+If,Not,ExistVar,%BootSector%,If,ExistSection,%projectdir%\script.project,SetOtherOS,Run,%projectdir%\script.project,SetOtherOS
+If,Not,ExistSection,%scriptfile%,Process_%BootSector%,Run,%scriptfile%,Warn_Echo,"'%ScriptTitle%' not prepared for %BootSector%"
+If,Not,ExistSection,%scriptfile%,Process_%BootSector%,Exit,"'%ScriptTitle%' not prepared for %BootSector%"
+Run,%scriptfile%,Process_%BootSector%
+
+[Process_Grub4Dos]
+Echo,"Processing Grub4Dos boot manager..."
+If,Not,ExistDir,%OtherOS_Target%,DirMake,%OtherOS_Target%
+//--
+StrFormat,REPLACE,%OtherOS_Folder%,\,/,%OtherOS_Folder_Menu%
+If,-%OtherOS_Folder%-,Equal,--,Set,%OtherOS_Folder_Menu%,/
+Else,Set,%OtherOS_Folder_Menu%,/%OtherOS_Folder_Menu%/
+//--
+If,%FlImg_CheckBox1%,Equal,True,Run,%ScriptFile%,G4D_FL_Image1
+If,%FlImg_CheckBox2%,Equal,True,Run,%ScriptFile%,G4D_FL_Image2
+If,%FlImg_CheckBox3%,Equal,True,Run,%ScriptFile%,G4D_FL_Image3
+If,%FlImg_CheckBox4%,Equal,True,Run,%ScriptFile%,G4D_FL_Image4
+
+[G4D_FL_Image1]
+If,Not,ExistFile,%FlImg_FileBox1%,Run,%scriptfile%,Warn_Message,"FloppyImage1 selected does not exist. It will not be added"
+Else,Begin
+strformat,filename,%FlImg_FileBox1%,%FlImg1_Filename%
+If,ExistFile,%OtherOS_Target%\%FlImg1_Filename%,FileDelete,%OtherOS_Target%\%FlImg1_Filename%
+FileCopy,%FlImg_FileBox1%,%OtherOS_Target%
+TXTAddLine,%BootMenu%,"title %FlImgTitle_TextBox1%",Append
+TXTAddLine,%BootMenu%,"map --mem %OtherOS_Folder_Menu%%FlImg1_Filename% (fd0)",Append
+run,%ScriptFile%,GrubRest
+End
+
+[G4D_FL_Image2]
+If,Not,ExistFile,%FlImg_FileBox2%,Run,%scriptfile%,Warn_Message,"FloppyImage2 selected does not exist. It will not be added"
+Else,Begin
+strformat,filename,%FlImg_FileBox2%,%FlImg2_Filename%
+If,ExistFile,%OtherOS_Target%\%FlImg2_Filename%,FileDelete,%OtherOS_Target%\%FlImg2_Filename%
+FileCopy,%FlImg_FileBox2%,%OtherOS_Target%
+TXTAddLine,%BootMenu%,"title %FlImgTitle_TextBox2%",Append
+TXTAddLine,%BootMenu%,"map --mem %OtherOS_Folder_Menu%%FlImg2_Filename% (fd0)",Append
+run,%ScriptFile%,GrubRest
+End
+
+[G4D_FL_Image3]
+If,Not,ExistFile,%FlImg_FileBox3%,Run,%scriptfile%,Warn_Message,"FloppyImage3 selected does not exist. It will not be added"
+Else,Begin
+strformat,filename,%FlImg_FileBox3%,%FlImg3_Filename%
+If,ExistFile,%OtherOS_Target%\%FlImg3_Filename%,FileDelete,%OtherOS_Target%\%FlImg3_Filename%
+FileCopy,%FlImg_FileBox3%,%OtherOS_Target%
+TXTAddLine,%BootMenu%,"title %FlImgTitle_TextBox3%",Append
+TXTAddLine,%BootMenu%,"map --mem %OtherOS_Folder_Menu%%FlImg3_Filename% (fd0)",Append
+run,%ScriptFile%,GrubRest
+End
+
+[G4D_FL_Image4]
+If,Not,ExistFile,%FlImg_FileBox4%,Run,%scriptfile%,Warn_Message,"FloppyImage4 selected does not exist. It will not be added"
+Else,Begin
+strformat,filename,%FlImg_FileBox4%,%FlImg4_Filename%
+If,ExistFile,%OtherOS_Target%\%FlImg4_Filename%,FileDelete,%OtherOS_Target%\%FlImg4_Filename%
+FileCopy,%FlImg_FileBox4%,%OtherOS_Target%
+TXTAddLine,%BootMenu%,"title %FlImgTitle_TextBox4%",Append
+TXTAddLine,%BootMenu%,"map --mem %OtherOS_Folder_Menu%%FlImg4_Filename% (fd0)",Append
+run,%ScriptFile%,GrubRest
+End
+
+[GrubRest]
+TXTAddLine,%BootMenu%,"map --hook",Append
+TXTAddLine,%BootMenu%,"chainloader (fd0)+1",Append
+TXTAddLine,%BootMenu%,"rootnoverify (fd0)",Append
+TXTAddLine,%BootMenu%,"map --floppies=1",Append
+TXTAddLine,%BootMenu%," ",Append
+
+[Process_IsoLinux]
+Echo,"Processing IsoLinux boot manager..."
+If,Not,ExistDir,%OtherOS_Target%,DirMake,%OtherOS_Target%
+//--
+StrFormat,REPLACE,%OtherOS_Folder%,\,/,%OtherOS_Folder_Menu%
+If,-%OtherOS_Folder%-,Equal,--,Set,%OtherOS_Folder_Menu%,/
+Else,Set,%OtherOS_Folder_Menu%,/%OtherOS_Folder_Menu%/
+//--
+If,%FlImg_CheckBox1%,Equal,True,Run,%ScriptFile%,LIN_FL_Image1
+If,%FlImg_CheckBox2%,Equal,True,Run,%ScriptFile%,LIN_FL_Image2
+If,%FlImg_CheckBox3%,Equal,True,Run,%ScriptFile%,LIN_FL_Image3
+If,%FlImg_CheckBox4%,Equal,True,Run,%ScriptFile%,LIN_FL_Image4
+
+[LIN_FL_Image1]
+If,Not,ExistFile,%FlImg_FileBox1%,Run,%scriptfile%,Warn_Message,"FloppyImage1 selected does not exist. It will not be added"
+Else,Begin
+strformat,filename,%FlImg_FileBox1%,%FlImg1_Filename%
+If,ExistFile,%OtherOS_Target%\%FlImg1_Filename%,FileDelete,%OtherOS_Target%\%FlImg1_Filename%
+FileCopy,%FlImg_FileBox1%,%OtherOS_Target%
+TXTAddLine,%BootMenu%,"LABEL %FlImgTitle_TextBox1%",Append
+TXTAddLine,%BootMenu%,"MENU LABEL ^%FlImgTitle_TextBox1%",Append
+TXTAddLine,%BootMenu%,"  LINUX /isolinux/memdisk",Append
+TXTAddLine,%BootMenu%,"  INITRD %OtherOS_Folder_Menu%%FlImg1_Filename%",Append
+TXTAddLine,%BootMenu%," ",Append
+End
+
+[LIN_FL_Image2]
+If,Not,ExistFile,%FlImg_FileBox2%,Run,%scriptfile%,Warn_Message,"FloppyImage2 selected does not exist. It will not be added"
+Else,Begin
+strformat,filename,%FlImg_FileBox2%,%FlImg2_Filename%
+If,ExistFile,%OtherOS_Target%\%FlImg2_Filename%,FileDelete,%OtherOS_Target%\%FlImg2_Filename%
+FileCopy,%FlImg_FileBox2%,%OtherOS_Target%
+TXTAddLine,%BootMenu%,"LABEL %FlImgTitle_TextBox2%",Append
+TXTAddLine,%BootMenu%,"MENU LABEL ^%FlImgTitle_TextBox2%",Append
+TXTAddLine,%BootMenu%,"  LINUX /isolinux/memdisk",Append
+TXTAddLine,%BootMenu%,"  INITRD %OtherOS_Folder_Menu%%FlImg2_Filename%",Append
+TXTAddLine,%BootMenu%," ",Append
+End
+
+[LIN_FL_Image3]
+If,Not,ExistFile,%FlImg_FileBox3%,Run,%scriptfile%,Warn_Message,"FloppyImage3 selected does not exist. It will not be added"
+Else,Begin
+strformat,filename,%FlImg_FileBox3%,%FlImg3_Filename%
+If,ExistFile,%OtherOS_Target%\%FlImg3_Filename%,FileDelete,%OtherOS_Target%\%FlImg3_Filename%
+FileCopy,%FlImg_FileBox3%,%OtherOS_Target%
+TXTAddLine,%BootMenu%,"LABEL %FlImgTitle_TextBox3%",Append
+TXTAddLine,%BootMenu%,"MENU LABEL ^%FlImgTitle_TextBox3%",Append
+TXTAddLine,%BootMenu%,"  LINUX /isolinux/memdisk",Append
+TXTAddLine,%BootMenu%,"  INITRD %OtherOS_Folder_Menu%%FlImg3_Filename%",Append
+TXTAddLine,%BootMenu%," ",Append
+End
+
+[LIN_FL_Image4]
+If,Not,ExistFile,%FlImg_FileBox4%,Run,%scriptfile%,Warn_Message,"FloppyImage4 selected does not exist. It will not be added"
+Else,Begin
+strformat,filename,%FlImg_FileBox4%,%FlImg4_Filename%
+If,ExistFile,%OtherOS_Target%\%FlImg4_Filename%,FileDelete,%OtherOS_Target%\%FlImg4_Filename%
+FileCopy,%FlImg_FileBox4%,%OtherOS_Target%
+TXTAddLine,%BootMenu%,"LABEL %FlImgTitle_TextBox4%",Append
+TXTAddLine,%BootMenu%,"MENU LABEL ^%FlImgTitle_TextBox4%",Append
+TXTAddLine,%BootMenu%,"  LINUX /isolinux/memdisk",Append
+TXTAddLine,%BootMenu%,"  INITRD %OtherOS_Folder_Menu%%FlImg4_Filename%",Append
+TXTAddLine,%BootMenu%," ",Append
+End
+
+[Warn_Message]
+Echo,#1,Warn
+Message,#1,Error
+
+[Warn_Echo]
+Echo,#1,Warn
+Echo,#1,Warn
+Echo,#1,Warn
+Echo,#1,Warn
+
+[OpenSourceFilesDir1]
+If,%FlImg_FileBox1%,Equal,"",Exit,"No Directory Specified"
+StrFormat,path,%FlImg_FileBox1%,%p%
+If,Not,ExistDir,%p%,DirMake,%p%
+System,FILEREDIRECT,OFF
+ShellExecuteEx,Open,explorer.exe,/e#$c#$q%p%#$q,%p%
+System,FILEREDIRECT,ON
+
+[OpenSourceFilesDir2]
+If,%FlImg_FileBox2%,Equal,"",Exit,"No Directory Specified"
+StrFormat,path,%FlImg_FileBox2%,%p%
+If,Not,ExistDir,%p%,DirMake,%p%
+System,FILEREDIRECT,OFF
+ShellExecuteEx,Open,explorer.exe,/e#$c#$q%p%#$q,%p%
+System,FILEREDIRECT,ON
+
+[OpenSourceFilesDir3]
+If,%FlImg_FileBox3%,Equal,"",Exit,"No Directory Specified"
+StrFormat,path,%FlImg_FileBox3%,%p%
+If,Not,ExistDir,%p%,DirMake,%p%
+System,FILEREDIRECT,OFF
+ShellExecuteEx,Open,explorer.exe,/e#$c#$q%p%#$q,%p%
+System,FILEREDIRECT,ON
+
+[OpenSourceFilesDir4]
+If,%FlImg_FileBox4%,Equal,"",Exit,"No Directory Specified"
+StrFormat,path,%FlImg_FileBox4%,%p%
+If,Not,ExistDir,%p%,DirMake,%p%
+System,FILEREDIRECT,OFF
+ShellExecuteEx,Open,explorer.exe,/e#$c#$q%p%#$q,%p%
+System,FILEREDIRECT,ON
+
+[AuthorEncoded]
+disk.jpg=3817,5090
+Logo=disk.jpg
+
+[InterfaceEncoded]
+DoubleJDesignRavenna3dArrowDown0016016.bmp=622,830
+BokehliciaCaptivaSoftwareupload0016016.bmp=676,902
+AmperossQetto2Move0016016.bmp=893,1191
+
+[EncodedFile-AuthorEncoded-disk.jpg]
+lines=1
+0=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
+1=U7iTvtvZe5sPLEZSoiYnGZpW5MUrckIx6oucvjpoMf68fGxDTJ5rPSOZkxYY8UmrCeYyLpOHeaZwLZIyZEFK3Tka9R6T1XcAQEPIZLa+KcRjSGeNPKGl6V1BTdyr5DLPO58LqqWUHcU9+HPooRH0Q5dt/4PryXcSTme5l8/fJ+89iVuXXLYJMVi7e6KGftpS5/sfxU+4XKN49tGSHMyX3NORxDeTEVc5/3fXk6wd92oqP7qsvPxF50Ntm3pSpXXUPEqaZwsevT+WzLNzxpt04pfIAkA5DFGS3OByehd7taRfE0RQJNc+fmqPHhyHLXZWSM4AhecE7drf3eOY9nDyaX6xjhSEbaa5TI8k5Q0O2xd7b+QW8/1fMp5/VZl4qz714IL1f+LJKjxK/SfidYO/4lMbXkFDH15TCqLB+lux7t0JBl7WGkWORhK0BLWgtC0Ro7z6AbKbjVkn0pNHeXU+ZXkisjr62IOylhe//WraWZmZ2Zwz4X6ecTi8UMcle/eJgda+8xVhv6WBX/mJnBKsHfq2SPwhoH7oGA8Nv6abmQx4UmDC1O8YU147xbiCW1xOB6LDdawypN7Bay8MT9W9vDFLf43O1tmdDX/k4N92+oQ8ywl6JhdcZ99BlUSmSiIXWu7WenhAqVLiRcIovwUO5y2ikcQmhbWqi46OYjzfPyL8h1Q79laI4p7+PfTEe59uwD7F5C7YFVENgXx/DSkKs/940ZQra0gA7CAVLN5Z2uyGpGnkezc54LPSO1oTHRCAdFEzp1TI9111RNPxicn5qYNPV5NbFMinhmJs7cTulEdt2gn31hHTiRaoaxDhxdGa8411DpWIHML3VtCDS0KbXMyik1/Gxjl/M8O+hdFG3XR1zcN8tCXWTodm6K3y4MnPx3KJWwgXic40jJLM7WyypIZxgFIxGs4YfQC/mwy4slhnQyMAEA5SQF43oFvKcBAAAAAgAAACQAAAChDgAAAAAAAAEAAAAAAAAAAAAAAA
+
+[DownloadXXX]
+Call,DownloadXQ
+
+[UploadXXX]
+Call,UploadXMultiQ
+
+[EncodedFile-InterfaceEncoded-DoubleJDesignRavenna3dArrowDown0016016.bmp]
+lines=0
+0=eJzNk09Ik2Ecxw06BF2KqG5ih1EgYZZu7+v7vnu3d++2MpelRFHgQZEaJLVIXSxrW4Wauf7Nwha2rQ7dOgT9IQT1EkQHi+hSHfRSUZrMcp389PjSoUib3vrB9/I8fD78fr+Hxwi0LS+yyi6ySWSVyGqRZUUl1rnr1/3vBfy3+TTxkabuAzx4dp+lsu/G31LRXIrjaCmeVjtfpj4v2jH+YQwpWIYc3orctgUptJkT/UcWxc/1rLXYqYpKqGcklEglcns5DuF48uLhPx2TUxOYIRWlU8PZraOdU1GjMsop4RO9+DucfM1NzuvIfctR3Wai9hq4rvrREybOCy608xpqrAqlQzhObiOSbv2Ln8nPsDvsZ33dSoob1mE7XIIsetAvCUePG63TiRpXUE47rJ0MvRz8wzH9fZqR0SHSj1LUhn2s8a6gMi7hTm7HddmLftHA2aVT2mJjY3Mx7naJ/I/8vHN0Zc5avKNLw+gP4O7bgeuKD73XQyDqI5QM8ur96IJ7jKUiFi8nDDwDezBuCsf1amsnA4Opgm8Y7jtu8UrSj3lnL+btOjypXRg3dpIdThfkjyWCFu9M1eC7tx/vXeFIC8etWjKL4IPdTRZfFqtAvua1PJ5sPWamnuxIpiD/9Plj4ukIh3oaqGk3KG+0sWHfWhp7DvJm7PWS/9FcZmdnF+R+AlbU23p4nNNyyS9Nykn1ckktzkzPC0osS83LSzROcSwqyi93yS/PMzAwNAMivaTcAoZRMPxAGQuEZmPCLu9y8YwcAxMAHjMRfb+2diEBAAAAAgAAAEQAAAAGAgAAAAAAAAEAAAAAAAAAAAAAAA
+
+[EncodedFile-InterfaceEncoded-BokehliciaCaptivaSoftwareupload0016016.bmp]
+lines=0
+0=eJytU21LWmEYbrAfsP0De4H2pRcqRq+0RllUZkav1O+YIH2JPvUhKKJfUE3aaCNQQR3pYWDTPCpBMKUxSczjZDB0Q8UPV/d9L0tdg33YAxfn5nq5n+c85z4vDa8e18l6TnhGeEJ4SnhUpxP+xa1euQD8V5RKJeTzeeRyOWSzWQHXzLH2t1yxWEQikYDb7cXu7iHW1/exuron4Jo51tjD3tqsw3GC+fn36O39hJ6eh8Eae9hb2SMYjGB42Iu+Pv8/gb2cKb+v2fwGAwOBGvhpTzfhg9S1utn8FuW7MplOMDQUwMhIgHrfY3Mzio2Nz1Uce9jLGc5mMhni/WhuPoROt4/6+td3ODpKwGqNV3HsYS9nOBuLfUFLyzG6ulzEnVXB4/kOpzPzB89eznD24iKKxkar9NPrg7fwYG7OBp/vGxRFw+ysDaOjnjudvZzhbDR6iY4OO/V0YHJSxdiYiq2trygUSri+zuLq6ofU29tx0djT2WmTDGdTqbRw3d1O+jYfMTGhYno6TL1zKC+uTaawaDrdHtrajiWjaWn5BgsLfhgMIZoPL6amQlKvrJzT/gUkkwUsL58Lx2hoOJAnZ8rzbLF4YTSG6d18dAY3nfMUg4MK7RmULGu/oUqea4tFqZi/JGZmwnJGgyEg8zU+fip3otcrdJcRusMQ2tt5vl3iVdVU1T9gt6exuMi+exiNZ2htfYempgNBf78LS0sRsPehf1DTfoq2sxPH2tolnTEm4Jo51tLpX1XZG70Y6I54nNNyys9OzcjJTM5MdE4sKMksSwzOTyspTyxKLS3IyU9MMTAwNAMivaTcAoZRMPxAGQuEtmHCLs9kcFmVgQkAJ9URXc7wHxQBAAAAAgAAAEQAAAA8AgAAAAAAAAEAAAAAAAAAAAAAAA
+
+[CompareEditXXX]
+Call,CompareEdit
+
+[EncodedFile-InterfaceEncoded-AmperossQetto2Move0016016.bmp]
+lines=0
+0=eJxtk1lIVFEYxw16agEVzTRncRtt0cx0NCu0QlsgyyCih7Cgh6KFNgQzSsqnFohUEm3FlqmsVGxxxoxSyYkpTcctsiKXtCZ1mPXee878++5o4YMf/DjfnXN+//sdmLt2s3amj7e0RAzhO8kMH7XPv/KfPcF0NXd7RXRg3ufCoDMD+nkFQ8Z5BYOTDBmDCgYNgXlfCudsq4yZzg3I7ToSfMHmVJQBilLi6pT1X097IZdsroBc87GpblB+zwHVNUBJ50JLBAQUSVhQIkJB/X+KBYQWCd4s1XUgKL/3kOz6HTYpQ4scbq9fLsL/ooAV50ahueKE8oYI1TWBoLVcgLKMKJWf6T1XHILv8WaVothyMlwHqG+KmHVJxKHbFnjs49j5zAnf2xyqexLC74hewm6JdE6AmjLDH1BGseVU2E17VeRjIIBmPFhhASQnnneK0Fy2IYaIKHEi9C6DXxmDWscQeY+yKkREPpLfaa+JuO/Wh5C/9bEd4C7INWyxw/bbCmnUiuZeK9bpHDhfY0FkuQvKSo6ohxKiqoCIu+76qEp3XUQtkFDL0DYm2x4863bjdAdwthfY0QKsMYjgYNDTAQVlqJ9yLHwBaB66DdFPhbol9TRLDUPsS4bWMQ+sYw6kVjuwhmbaXzuOvTVWVJtpPkqpbx/DYp0b0a+AmGrBsKhWMMS+AWL1dDcipZGhctiDHSYRbRY3OSIhYdwlYaI4cppdCGsAFr8Q6uNeiU/iacalrxkSyI1ropxGCXEtDGs/cmxq50hrlvCkx+G9W/F3DzQNDLITpxerEhrFE0ntwLK3DInvGLTvGZI/0BytHInka0wce9tpDo+E0gEPwuncUkJ2ljeJuUlGzNcamS3pA8iVkEJO6ieOVR2EmXpaN3Zz7PviQbyJPMrXfgSSjcy+2mQPlv+DaR3CrrSvQGon0caxmry0Lo508tJ7KIf6BLqHvLeyC0j/RpiFnKnfQEa3sDujj1syR4CMn0AmsZ76DSMTvfe3X8C6Pv4n0yzsme4bzO6yB2f1s6NZ/VyX9YPVZU+yhcjqlx5kD9FetyNkqvMXP3mcf3ick3XMLUgtyi8uDkwtKck38s0vSzUwMDQDIr2k3AKGUTDMgRkLhFZixi4vra37hIEJABkJC8Gkai7oAQAAAAIAAAA3AAAAIgMAAAAAAAABAAAAAAAAAAAAAAA
+

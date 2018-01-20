@@ -1,0 +1,284 @@
+[Main]
+Title=Internet Favorites
+Type=Plugin
+Author=Lancelot
+Description=Internet Favorites - Maintain Favorites (.url files)
+Credits=dera for starting ie idea, amalux for testing on Vista
+Version=017
+Download_Level=1
+Level=3
+Selected=False
+Mandatory=False
+NoWarning=False
+Contact=http://TheOven.org
+Date=2017.12.18
+Depend=
+Disable=
+Web1=http://gena.cwcodes.net/Projects/Gena/Components/Core/1%20System/IE_Favorites_url.script
+Web2=http://yomi.cwcodes.net/Yomi/ComponentsY/Core/1%20System/IE_Favorites_url.script
+Web3=http://w7pese.cwcodes.net/Projects/Win7PESE/Components/IE_Favorites_url.script
+Web4=http://w8pese.cwcodes.net/Projects/Win8PESE/Components/IE_Favorites_url.script
+Web5=http://win81se.cwcodes.net/Projects/Win8.1SE/Components/IE_Favorites_url.script
+CertifiedBy=
+Certification=
+HistoryNotes01=
+History008=CheckBox_Copy_IEF_Files_LocalFL hidden (NOT good enough for cases hostos chinese etc. etc. better copy files selectively.) - Fixed with //FileCopy * have unicode bug - workaround with DirCopy * bug (2016.11.08)
+History011=ChrisR - Following AU3381 updated (2012.06.25)
+History012a=Lancelot Added DU buttons
+History012=Kyhi - Title Name change, wording only - tested on win10pe project - still adds favorites to startmenu > favorites - Start8/10 classicshell - Date:2015.10.11
+History016=Lancelot Added Components_PluginCache_Extract x 2 // fixed CheckBox_Copy_IEF_Files_LocalFL (workaround) - Date:2016.11.08 - Date:2016.11.10
+History017=Lancelot Update empty Home Page WebLabel - PEBakery - ied206 Reply 3 http://TheOven.org/index.php?topic=2329.msg25119#msg25119 - Date:2017.12.18
+
+[Cache_SCD_Info_Additional_Plugin]
+IniRead,%ScriptFile%,Main,Selected,%t%
+If,%t%,Equal,True,Begin
+Run,%api%,Cache_SCD_Info_Additional_Plugin_ML,#1,#2,#3,#4,#5,#6,#7,#8,#9
+//-
+If,%CheckBox_Copy_IEF_Files_Provide%,Equal,True,Begin
+Call,RetrieveFolderUniqueID,%pers%
+IniWrite,%ProjectTemp%\%SFName%_Unique.ini,Unique,%Plugin_FName_Sub%_|_CheckBox_Copy_IEF_Files_Provide_True_RetrieveFolderUniqueID,%RetrieveFolderUniqueID%
+If,%RetrieveFolderUniqueID%,Equal,1,IniWrite,%ProjectTemp%\%SFName%_Unique.ini,Unique,%Plugin_FName_Sub%_|_CheckBox_Copy_IEF_Files_Provide_True_RetrieveFolderUniqueID,"%RetrieveFolderUniqueID% : Directory Not Exists"
+If,%RetrieveFolderUniqueID%,Equal,2,IniWrite,%ProjectTemp%\%SFName%_Unique.ini,Unique,%Plugin_FName_Sub%_|_CheckBox_Copy_IEF_Files_Provide_True_RetrieveFolderUniqueID,"%RetrieveFolderUniqueID% : Directory exists but empty"
+End
+//-
+If,%CheckBox_Copy_IEF_Files_LocalFL%,Equal,True,Begin
+RegRead,HKCU,"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders",Favorites,%FavoritesLocal%
+If,ExistDir,%FavoritesLocal%,Begin
+Call,RetrieveFolderUniqueID,%FavoritesLocal%
+IniWrite,%ProjectTemp%\%SFName%_Unique.ini,Unique,%Plugin_FName_Sub%_|_CheckBox_Copy_IEF_Files_LocalFL_True_RetrieveFolderUniqueID,%RetrieveFolderUniqueID%
+If,%RetrieveFolderUniqueID%,Equal,1,IniWrite,%ProjectTemp%\%SFName%_Unique.ini,Unique,%Plugin_FName_Sub%_|_CheckBox_Copy_IEF_Files_LocalFL_True_RetrieveFolderUniqueID,"%RetrieveFolderUniqueID% : Directory Not Exists"
+If,%RetrieveFolderUniqueID%,Equal,2,IniWrite,%ProjectTemp%\%SFName%_Unique.ini,Unique,%Plugin_FName_Sub%_|_CheckBox_Copy_IEF_Files_LocalFL_True_RetrieveFolderUniqueID,"%RetrieveFolderUniqueID% : Directory exists but empty"
+End
+End
+//-
+Echo,"Cache_SCD_Info_Additional_Plugin - Finish - %Plugin_FName%"
+End
+
+[Interface]
+CheckBox_Copy_IEF_Files_LocalFL="Copy IE Favorites from Local Favorites Folder",1,3,12,190,155,30,False
+Copy_IEF_Files_Provide_Bevel=pBevel1,1,12,8,190,165,70
+CheckBox_Copy_IEF_Files_Provide="Copy IE Favorites from Personal Folder",1,3,186,190,135,30,True
+TextLabel_Copy_IEF_Files_Provide="Tip:#$xBeter not to use 'Copy from Local'#$xClick 'Open Local Favorites Folder' and 'Open Personal Folder' buttons#$x  Copy the ones you like from local to personal.   :)",1,1,46,263,341,55,8,Normal
+Shellexecute_GlobalDirectory_Button="Open Personal Folder",1,8,193,219,115,36,Shellexecuteglobaldirectory,,False,_Shellexecuteglobaldirectory_,False
+Shellexecute_FavoritesLocaldirectory_Button="Open Local Favorites",1,8,12,216,109,36,ShellexecuteFavoritesLocaldirectory,_ShellexecuteFavoritesLocaldirectory_,False
+pBevel2=pBevel1,1,12,177,190,145,70
+pBevel4=pBevel4,1,12,326,190,130,70
+OpenProfileFavoritesDir_pButton="Favorites Maintance",1,8,330,224,122,25,OpenProfileFavoritesDir
+pTextLabel2="Advanced Users only (to debug after build)",1,1,332,194,109,29,8,Normal
+pCheckBox_Url_Fixer=Url_Fixer,1,3,358,98,68,18,False
+pCheckBox_p="Use PreMade Url:",1,3,13,6,107,18,True
+pTextLabel4=Favorites:,1,1,29,29,56,18,8,Normal
+pCheckBox_p_google=Google,1,3,159,47,53,18,True
+pCheckBox_p_googleen="Google en",1,3,159,66,68,18,True
+pCheckBox_p_googletranslator="Google Translator",1,3,159,85,106,19,True
+pCheckBox_p_GenaF="Gena Forum",1,3,159,105,80,18,True
+pCheckBox_p_msfnforum="MSFN Forum",1,3,159,124,81,18,True
+pBevel5=pBevel5,1,12,17,25,256,127
+pCheckBox_StartMenu_Display_Favorites="Display Favorites in StartMenu",1,3,286,57,172,18,True
+pCheckBox_urldll="Add url.dll for icons",1,3,286,75,120,18,True
+pTextLabel3=Links:,1,1,153,28,33,18,8,Normal
+pCheckBox_pf_google=Google,1,3,38,48,54,17,True
+pCheckBox_pf_googleen="Google en",1,3,38,66,69,18,True
+pCheckBox_pf_googletranslator="Google Translator",1,3,38,85,105,18,True
+pCheckBox_pf_GenaF="Gena Forum",1,3,38,104,80,18,True
+pCheckBox_pf_msfnforum="MSFN Forum",1,3,38,123,80,18,True
+WebLabel_Homepg=HomePage,1,10,343,20,55,18,http://TheOven.org/index.php?board=9
+WebLabel_Plugin="Plugin Page",1,10,338,4,55,18,http://TheOven.org/index.php?board=9
+Button_Download=,1,8,403,21,24,24,DownloadXXX,DoubleJDesignRavenna3dArrowDown0016016.bmp,False,False,_DownloadXXX_,False,"__DOWNLOAD Plugin"
+Button_Upload=,1,8,403,-1,24,24,UploadXXX,BokehliciaCaptivaSoftwareupload0016016.bmp,False,False,_UploadXXX_,False,"__UPLOAD Plugin (Admins Only)"
+Button_CompareEdit=,1,8,426,-1,24,24,CompareEditXXX,AmperossQetto2Move0016016.bmp,False,False,_CompareEditXXX_,False,"__DOWNLOAD and Compare with an Editor"
+
+[Variables]
+%PersonalFolder%=Favorites_Files_L
+%pers%=%GlobalTemplates%\%PersonalFolder%
+%URL_Fixer_au3_temp%=%ProjectTemp%\URL_Fixer_au3_temp
+
+[Process]
+If,ExistFile,%ProjectTemp%\Components_PluginCache_Extract.ini,Echo,"Components PluginCache"
+If,Not,ExistFile,%ProjectTemp%\Components_PluginCache_Extract.ini,Run,%ScriptFile%,Process_Normal
+
+[Process_Normal]
+If,%OSFamily%,Equal,NT5,Begin
+If,ExistFile,%ProjectInfo%,Begin
+IniRead,%ProjectInfo%,BasePath,Favorites,%baseFav%
+IniRead,%ProjectInfo%,BasePath,Links,%baseLnk%
+Set,%FavoF%,%TargetProfilesBaseDir%\%baseFav%
+Set,%LinkF%,%TargetProfilesBaseDir%\%baseLnk%
+End
+Else,Exit,"ProjectInfo file not found"
+End
+Else,Begin
+Set,%FavoF%,%TargetProfilesUserDir%\Favorites
+Set,%LinkF%,%TargetProfilesUserDir%\Favorites\Links
+End
+If,Not,ExistDir,%FavoF%,DirMake,%FavoF%
+If,Not,ExistDir,%LinkF%,DirMake,%LinkF%
+//--
+//url.dll contains default icon of ie ;) (if used)
+If,%pCheckBox_urldll%,Equal,True,Require_FileQ,url.dll
+//--
+//CheckBox_Copy_IEF_Files_LocalFL cancelled and than enabled check history008
+If,%CheckBox_Copy_IEF_Files_LocalFL%,Equal,True,Run,%ScriptFile%,copyfromlocaldir
+If,%CheckBox_Copy_IEF_Files_Provide%,Equal,True,Run,%ScriptFile%,copyfromsourcedir
+If,%pCheckBox_p%,Equal,True,Run,%ScriptFile%,Plugin_URL
+If,%pCheckBox_Url_Fixer%,Equal,True,Run,%ScriptFile%,urlfixer
+//--
+//For both PE1 and PE2-3 :)
+RegHiveLoad,Tmp_Default,%RegDefault%
+If,%pCheckBox_StartMenu_Display_Favorites%,Equal,True,RegWrite,HKLM,0x4,Tmp_Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced,StartMenuFavorites,1
+If,%pCheckBox_StartMenu_Display_Favorites%,Equal,False,RegWrite,HKLM,0x4,Tmp_Default\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced,StartMenuFavorites,0
+RegHiveUnLoad,Tmp_Default
+
+[Plugin_URL]
+//---------Inside Favorites
+If,%pCheckBox_pf_google%,Equal,True,Add,Url,,Google.url,http://www.google.com
+If,%pCheckBox_pf_googleen%,Equal,True,Add,Url,,"Google en.url",http://www.google.com/intl/en/
+If,%pCheckBox_pf_googletranslator%,Equal,True,Add,Url,,"Google Translator.url",http://translate.google.com
+If,%pCheckBox_pf_GenaF%,Equal,True,Add,Url,,"Gena Forum.url",http://theoven.org/,#$psystemroot#$p\system32\Gena_Forum.ico
+If,%pCheckBox_pf_GenaF%,Equal,True,ExtractFile,%ScriptFile%,URL_Icons,Gena_Forum.ico,%target_sys%
+If,%pCheckBox_pf_msfnforum%,Equal,True,Add,Url,,"MSFN Forum.url",http://www.msfn.org/board/forum.html,#$psystemroot#$p\system32\msfn_modrica.ico
+If,%pCheckBox_pf_msfnforum%,Equal,True,ExtractFile,%ScriptFile%,URL_Icons,msfn_modrica.ico,%target_sys%
+//---------Inside links
+//(short file names used here since links bar has a limited space)
+If,%pCheckBox_p_google%,Equal,True,Add,Url,Links,G.url,http://www.google.com
+If,%pCheckBox_p_googleen%,Equal,True,Add,Url,Links,"G_En.url",http://www.google.com/intl/en/
+If,%pCheckBox_p_googletranslator%,Equal,True,Add,Url,Links,"G_T.url",http://translate.google.com
+If,%pCheckBox_p_GenaF%,Equal,True,Add,Url,Links,"Gena.url",http://theoven.org/,#$psystemroot#$p\system32\Gena_Forum.ico
+If,%pCheckBox_p_GenaF%,Equal,True,ExtractFile,%ScriptFile%,URL_Icons,Gena_Forum.ico,%target_sys%
+If,%pCheckBox_p_msfnforum%,Equal,True,Add,Url,Links,"MSFN F.url",http://www.msfn.org/board/forum.html,#$psystemroot#$p\system32\msfn_modrica.ico
+If,%pCheckBox_p_msfnforum%,Equal,True,ExtractFile,%ScriptFile%,URL_Icons,msfn_modrica.ico,%target_sys%
+
+[copyfromlocaldir]
+RegRead,HKCU,"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders",Favorites,%FavoritesLocal%
+If,ExistDir,%FavoritesLocal%,Begin
+If,Not,ExistDir,%ProjectTemp%\FavoritesTemp,DirMake,%ProjectTemp%\FavoritesTemp
+//FileCopy * have unicode bug - workaround with DirCopy * bug
+//FileCopy,%FavoritesLocal%\*,%ProjectTemp%\FavoritesTemp
+DirCopy,%FavoritesLocal%\*,%ProjectTemp%\FavoritesTemp
+FileDelete,%ProjectTemp%\FavoritesTemp\Desktop.ini
+FileCopy,%ProjectTemp%\FavoritesTemp\*,%FavoF%
+FileDelete,%ProjectTemp%\FavoritesTemp
+End
+
+[copyfromsourcedir]
+If,Not,ExistDir,%pers%\Links,DirMake,%pers%\Links
+Retrieve,FolderSize,%pers%,%sourcedirsize%
+If,Not,%sourcedirsize%,Equal,0,Begin
+If,Not,%OSFamily%,Equal,NT5,FileCopy,%pers%\*,%FavoF%
+Else,Begin
+If,ExistDir,%ProjectTemp%\FavLinks,Shellexecute,Hide,cmd.exe,"/C rd /s /q #$q%ProjectTemp%\FavLinks#$q"
+If,ExistDir,%ProjectTemp%\FavLinks,Echo,"Directory NOT DELETED",WARN
+DirMake,%ProjectTemp%\FavLinks
+DirMove,%pers%\Links,%ProjectTemp%\FavLinks
+FileCopy,%pers%\*,%FavoF%
+DirMove,%ProjectTemp%\FavLinks\Links,%pers%
+FileCopy,%pers%\Links\*,%LinkF%
+End
+End
+
+[urlfixer]
+//fixes hardcoded IconFile=lines of url.dll and shell32.dll
+//example: IconFile=C:\WINDOWS\system32\url.dll --> IconFile=%systemroot%\system32\url.dll (same as shell32.dll , C:\Windows\system32\ line is not important )
+If,ExistDir,%URL_Fixer_au3_temp%,DirDelete,%URL_Fixer_au3_temp%
+DirMake,%URL_Fixer_au3_temp%
+ExtractFile,%ScriptFile%,URL_Fixer,URLFixer.au3,%URL_Fixer_au3_temp%
+If,ExistFile,%tools%\x86\AutoIt3.exe,FileCopy,%tools%\x86\AutoIt3.exe,%URL_Fixer_au3_temp%
+If,Not,ExistFile,%URL_Fixer_au3_temp%\AutoIt3.exe,If,ExistFile,%tools%\x86\AU3381.exe,FileCopy,%tools%\x86\AU3381.exe,%URL_Fixer_au3_temp%\AutoIt3.exe
+If,ExistFile,%URL_Fixer_au3_temp%\AutoIt3.exe,Shellexecute,Hide,%URL_Fixer_au3_temp%\AutoIt3.exe,"URLFixer.au3 subyes #$q%FavoF%\*.url#$q",%URL_Fixer_au3_temp%
+Else,Echo,"AutoIt3.exe NOT found - urlfixer not processed",Warn
+
+[Shellexecuteglobaldirectory]
+If,Not,ExistDir,%pers%\Links,DirMake,%pers%\Links
+System,FILEREDIRECT,OFF
+ShellExecuteEx,Open,explorer.exe,/e#$c#$q%pers%#$q
+System,FILEREDIRECT,ON
+
+[ShellexecuteFavoritesLocaldirectory]
+RegRead,HKCU,"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders",Favorites,%FavoritesLocal%
+If,ExistDir,%FavoritesLocal%,Begin
+System,FILEREDIRECT,OFF
+ShellExecuteEx,Open,explorer.exe,/e#$c#$q%FavoritesLocal%#$q
+System,FILEREDIRECT,ON
+End
+
+[OpenProfileFavoritesDir]
+If,%OSFamily%,Equal,NT5,Begin
+If,ExistFile,%ProjectInfo%,Begin
+IniRead,%ProjectInfo%,BasePath,Favorites,%baseFav%
+Set,%FavoF%,%TargetProfilesBaseDir%\%baseFav%
+End
+Else,Exit,"ProjectInfo file not found"
+End
+Else,Set,%FavoF%,%TargetProfilesUserDir%\Favorites
+If,Not,ExistDir,%FavoF%,Exit,"Directory NOT found"
+System,FILEREDIRECT,OFF
+ShellExecuteEx,Open,explorer.exe,/e#$c#$q%FavoF%#$q
+System,FILEREDIRECT,ON
+
+[AuthorEncoded]
+favorites_4848_b.ico=3476,4635
+Logo=favorites_4848_b.ico
+
+[EncodedFile-AuthorEncoded-favorites_4848_b.ico]
+lines=1
+0=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
+1=deK3ceuNc8b2tTl/f95ORFnhZAATkXORUd+QSPAAT+mFErTV72zL2meSdrt2DzF5f1FvCYAo9RN/Rc11kmO7os2tro/6/S6DZ7VbcJEfGFDHWUOGWUkj/pY9b3Z8ulD1Y8dq/p3Y15zV47L7qoCtwuwaMLZ8qN8J2zIehe87prmxjoN3TbEbF1um34t1EaaXRg+3tNq0E2JWh0WIYW32uZ905cMuFe0/kl1mvh+lN9l2xKl+6ibvq/tDcnPyONnv77pu6mTvwSgUrnJXwc98H6fjEPe7dvF+f2a5ljCr/C/Y+FImTl+aDqG95b7KO2U9vf/N279dckqfut+JCvD52s8vbocAgfCFQLP8jd3P0Bt2/n/ozbLxa+xU/e8/71fmRlONiRz41+cQvFx7W70V/rfqOvHnSjdwQqvs7j3b//AwDeRAZ4nBNJSyzLL8osSS2ON7EwsYhP0stMzmcYBSMF7FOF0A682OWfWjUpMzABAJNvCj/3iJf0AQAAAAIAAAAwAAAAQA0AAAAAAAABAAAAAAAAAAAAAAA
+
+[EncodedFolders]
+URL_Fixer
+URL_Icons
+
+[URL_Icons]
+msfn_modrica.ico=715,954
+Gena_Forum.ico=2719,3626
+
+[EncodedFile-URL_Icons-msfn_modrica.ico]
+lines=0
+0=eJztkD1ME2EYx/+PSMUPlCriFyitXxQVrfjBCWo9FfVEkUrBnqJCKQInJs2FqSExpGEgTQfSMJALg8kxkBxDkzKQ3GRSB5I6kNSBpAwOHW9kxOdAZDIOrvwv73vvx/M+z+//AMRfWRl4LkF/MVABoIYHH6EaG+frImyJtvZra2swxwXkFnQobS4YY3EkwzJWf2aQTykw5hSoYRHWkgZtRIQ27Uf2ix+xbg/yX2PQhxVkUlGkJ2XkVzKIj8iIBSTkfxgwRrwwxiXEIxIyMxw3xXmW01C7vNCHZGgDEowZGdk5DYVvSY4VYCRCnEtCbpbvh0KIdrlQ+K4jyrHpMS+ysyGYEyLUgAexCLMsRJFLqdBHBaQTcayumMgvxGAxi8UMStCLwpLB/JyDmdVugfNpsBaTSA6EuIYf+XkVWkRBbsbP/kXokRCy01wvISLLfOYU87Nvi3OvrqShcG014GKPOnv1M3schl1/TGA2ARnm04dlfs/+Rr2wuJfWssnvXOzHA4vrx8IeFBbZN3Pk5nVmsfth1+c83AczITCHjMyknYs9M4vJ6/SE/ZewrW39t9y9jj+qdsPd5nr6aUMfpdIK973d+x9VDnR01AUCdUOPS3trvE8q+9oDH4LBHX319ecczQcfKO8OtF/0eILBrqaHjuYb54laXxLtPMoj7GguKyG6HOZ1kM/DocFakejkK6I3HNN6JjT4upbo9iGi52H73uds4f2es0TCPqKmPt7fIrpymOjCcaJjl3zOmw20qRNXRZ9Trmp8372u0/67d3yd5S1VDetqbHy798Wpnmvlu67/1rMjxT0o6nRu6n5/ET7Tv1v0N9lvfwFBZOpzeJwTyC1Oy4vPzU8pykxO1MtMzmcYBSMJ1LFC6Bom7PIzm1jSGJgAwdUI9PuKvEoBAAAAAgAAACsAAAB8AgAAAAAAAAEAAAAAAAAAAAAAAA
+
+[EncodedFile-URL_Fixer-UrlFixer.au3]
+lines=0
+0=eJzNVl1v2kgUfSZS/sOVWyocUQSkadW0rkLATiy5NDK0WamOkIELjNaeQePxClbR/p/+y874OwGizSoPKx7GvnPuuefeObZ5NWRj7m/tGaPHR69cXJLkohcLZovTW+6v18gnfRauOUaR3DTe7W67GE0GGM04WQsFuQxidMgC4TsPLLJBvj/FIgH+hTxh7bTa6rcf6ODSD/psveVkuRLGL+i22x9BVQFVpgXn+oFEny5jf4lGp312dkgEBnNjwKKtD3YUkvuYB5OFEt0y/zCfyhkxCoP4b6QBhghjn5MVua/PfYF1qAsSYv2p7HTjvp6uP5ArtEnn+RF8+gemAaFE+DwOfQ5RPN1iBP1zT2AkvJOW1LkXRdkekCZDN5wtuR+CGnvkZcLytYUb1CDBOYT+GXlV2pYfn2q5ghKS0GvHR1cBm/oBvB7FU4sFc+RggOUHER4f2Qt43Q/nEo8/23fwGbrwjUOjiHVk7AtoKbUGPTqHPXuUaTqMV0jB3BCRsA6ZgJHghC5tKteSsXvXBO3ckwmyUBWh2r5C0RMyNq3idZkw2ClQlWGUChPQg07HPMZyBvbQnli2Y8qNtPiYk9DBhXio8LB0T2tCuwlvO7qenNzXaHnJNo137Y/vm9VZVm7O7uANXMx4sJBrEX1/lxKkHU0uncnoxrHHDRm1YjqDB5Gaw2aF/G/OwHSLBv6z+JqaYjkpNTkZrKm6lj0cZHUalZoqST4C9kKuJUxO8xFIYpIWAD4ZxpeikeOjSmuVXHl30xtfZ5IeO+eRL3Jw1RQuiphT2VbKkGa76l1U4JvQ0RO7erlHsg14Y6hgOWKl1uy5/Wv1lMjaFpHdEB4JddMo00ovSS0qbGUNZZMteWTZt51ivrcryQNKaq1WTauUG+KmrJaS6Ale8l4g54yXD4PD2Drf+3ejU9IrdauTTIiSo1W99d2DOYlzFfah/Qs3NSvzhYu+61i7DDI7N1PtVl6V5tr1T+GWHQdlJn1RDz3XCdpJ60T737jghRywb7x7D/Hxq+Ap7DMPPKleOfLclVfmuCDNDss1e4PJj57zXY3QpsRFf14CZYc2FcgpitGKcTGLhaZi8m+VGpG61vQ9b4+StflBV98Z+UVtzYNAy4alWpHFbjkR+Kxq9WgbCQw5Y6LupdenXS9nT1608gNNDsvpdBI9o2vTcU67VU0vqqjKr9eeOrH0bH4DbxEpmHic4wktynHLrEgt0kssNWYYBSMNbOCC0N3M2OW7Om1WMjABAK1WB7dvGA31AQAAAAIAAAAoAAAAiwMAAAAAAAABAAAAAAAAAAAAAAA
+
+[URL_Fixer]
+UrlFixer.au3=983,1311
+
+[EncodedFile-URL_Icons-Gena_Forum.ico]
+lines=0
+0=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
+
+[DownloadXXX]
+Call,DownloadXQ
+
+[UploadXXX]
+Call,UploadXMultiQ
+
+[Settings_Default]
+IniWrite,%ScriptFile%,Main,Selected,False
+
+[Settings_Default_Gena]
+IniWrite,%ScriptFile%,Main,Selected,True
+
+[Settings_Default_SE]
+IniWrite,%ScriptFile%,Main,Selected,False
+
+[InterfaceEncoded]
+DoubleJDesignRavenna3dArrowDown0016016.bmp=622,830
+BokehliciaCaptivaSoftwareupload0016016.bmp=676,902
+AmperossQetto2Move0016016.bmp=893,1191
+
+[EncodedFile-InterfaceEncoded-DoubleJDesignRavenna3dArrowDown0016016.bmp]
+lines=0
+0=eJzNk09Ik2Ecxw06BF2KqG5ih1EgYZZu7+v7vnu3d++2MpelRFHgQZEaJLVIXSxrW4Wauf7Nwha2rQ7dOgT9IQT1EkQHi+hSHfRSUZrMcp389PjSoUib3vrB9/I8fD78fr+Hxwi0LS+yyi6ySWSVyGqRZUUl1rnr1/3vBfy3+TTxkabuAzx4dp+lsu/G31LRXIrjaCmeVjtfpj4v2jH+YQwpWIYc3orctgUptJkT/UcWxc/1rLXYqYpKqGcklEglcns5DuF48uLhPx2TUxOYIRWlU8PZraOdU1GjMsop4RO9+DucfM1NzuvIfctR3Wai9hq4rvrREybOCy608xpqrAqlQzhObiOSbv2Ln8nPsDvsZ33dSoob1mE7XIIsetAvCUePG63TiRpXUE47rJ0MvRz8wzH9fZqR0SHSj1LUhn2s8a6gMi7hTm7HddmLftHA2aVT2mJjY3Mx7naJ/I/8vHN0Zc5avKNLw+gP4O7bgeuKD73XQyDqI5QM8ur96IJ7jKUiFi8nDDwDezBuCsf1amsnA4Opgm8Y7jtu8UrSj3lnL+btOjypXRg3dpIdThfkjyWCFu9M1eC7tx/vXeFIC8etWjKL4IPdTRZfFqtAvua1PJ5sPWamnuxIpiD/9Plj4ukIh3oaqGk3KG+0sWHfWhp7DvJm7PWS/9FcZmdnF+R+AlbU23p4nNNyyS9Nykn1ckktzkzPC0osS83LSzROcSwqyi93yS/PMzAwNAMivaTcAoZRMPxAGQuEZmPCLu9y8YwcAxMAHjMRfb+2diEBAAAAAgAAAEQAAAAGAgAAAAAAAAEAAAAAAAAAAAAAAA
+
+[EncodedFile-InterfaceEncoded-BokehliciaCaptivaSoftwareupload0016016.bmp]
+lines=0
+0=eJytU21LWmEYbrAfsP0De4H2pRcqRq+0RllUZkav1O+YIH2JPvUhKKJfUE3aaCNQQR3pYWDTPCpBMKUxSczjZDB0Q8UPV/d9L0tdg33YAxfn5nq5n+c85z4vDa8e18l6TnhGeEJ4SnhUpxP+xa1euQD8V5RKJeTzeeRyOWSzWQHXzLH2t1yxWEQikYDb7cXu7iHW1/exuron4Jo51tjD3tqsw3GC+fn36O39hJ6eh8Eae9hb2SMYjGB42Iu+Pv8/gb2cKb+v2fwGAwOBGvhpTzfhg9S1utn8FuW7MplOMDQUwMhIgHrfY3Mzio2Nz1Uce9jLGc5mMhni/WhuPoROt4/6+td3ODpKwGqNV3HsYS9nOBuLfUFLyzG6ulzEnVXB4/kOpzPzB89eznD24iKKxkar9NPrg7fwYG7OBp/vGxRFw+ysDaOjnjudvZzhbDR6iY4OO/V0YHJSxdiYiq2trygUSri+zuLq6ofU29tx0djT2WmTDGdTqbRw3d1O+jYfMTGhYno6TL1zKC+uTaawaDrdHtrajiWjaWn5BgsLfhgMIZoPL6amQlKvrJzT/gUkkwUsL58Lx2hoOJAnZ8rzbLF4YTSG6d18dAY3nfMUg4MK7RmULGu/oUqea4tFqZi/JGZmwnJGgyEg8zU+fip3otcrdJcRusMQ2tt5vl3iVdVU1T9gt6exuMi+exiNZ2htfYempgNBf78LS0sRsPehf1DTfoq2sxPH2tolnTEm4Jo51tLpX1XZG70Y6I54nNNyys9OzcjJTM5MdE4sKMksSwzOTyspTyxKLS3IyU9MMTAwNAMivaTcAoZRMPxAGQuEtmHCLs9kcFmVgQkAJ9URXc7wHxQBAAAAAgAAAEQAAAA8AgAAAAAAAAEAAAAAAAAAAAAAAA
+
+[CompareEditXXX]
+Call,CompareEdit
+
+[EncodedFile-InterfaceEncoded-AmperossQetto2Move0016016.bmp]
+lines=0
+0=eJxtk1lIVFEYxw16agEVzTRncRtt0cx0NCu0QlsgyyCih7Cgh6KFNgQzSsqnFohUEm3FlqmsVGxxxoxSyYkpTcctsiKXtCZ1mPXee878++5o4YMf/DjfnXN+//sdmLt2s3amj7e0RAzhO8kMH7XPv/KfPcF0NXd7RXRg3ufCoDMD+nkFQ8Z5BYOTDBmDCgYNgXlfCudsq4yZzg3I7ToSfMHmVJQBilLi6pT1X097IZdsroBc87GpblB+zwHVNUBJ50JLBAQUSVhQIkJB/X+KBYQWCd4s1XUgKL/3kOz6HTYpQ4scbq9fLsL/ooAV50ahueKE8oYI1TWBoLVcgLKMKJWf6T1XHILv8WaVothyMlwHqG+KmHVJxKHbFnjs49j5zAnf2xyqexLC74hewm6JdE6AmjLDH1BGseVU2E17VeRjIIBmPFhhASQnnneK0Fy2IYaIKHEi9C6DXxmDWscQeY+yKkREPpLfaa+JuO/Wh5C/9bEd4C7INWyxw/bbCmnUiuZeK9bpHDhfY0FkuQvKSo6ohxKiqoCIu+76qEp3XUQtkFDL0DYm2x4863bjdAdwthfY0QKsMYjgYNDTAQVlqJ9yLHwBaB66DdFPhbol9TRLDUPsS4bWMQ+sYw6kVjuwhmbaXzuOvTVWVJtpPkqpbx/DYp0b0a+AmGrBsKhWMMS+AWL1dDcipZGhctiDHSYRbRY3OSIhYdwlYaI4cppdCGsAFr8Q6uNeiU/iacalrxkSyI1ropxGCXEtDGs/cmxq50hrlvCkx+G9W/F3DzQNDLITpxerEhrFE0ntwLK3DInvGLTvGZI/0BytHInka0wce9tpDo+E0gEPwuncUkJ2ljeJuUlGzNcamS3pA8iVkEJO6ieOVR2EmXpaN3Zz7PviQbyJPMrXfgSSjcy+2mQPlv+DaR3CrrSvQGon0caxmry0Lo508tJ7KIf6BLqHvLeyC0j/RpiFnKnfQEa3sDujj1syR4CMn0AmsZ76DSMTvfe3X8C6Pv4n0yzsme4bzO6yB2f1s6NZ/VyX9YPVZU+yhcjqlx5kD9FetyNkqvMXP3mcf3ick3XMLUgtyi8uDkwtKck38s0vSzUwMDQDIr2k3AKGUTDMgRkLhFZixi4vra37hIEJABkJC8Gkai7oAQAAAAIAAAA3AAAAIgMAAAAAAAABAAAAAAAAAAAAAAA
+

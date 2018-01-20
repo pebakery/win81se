@@ -1,0 +1,220 @@
+[Main]
+Title=ISO Images
+Type=Plugin
+Author=ChrisR
+Description=Add ISO images to Grub4Dos Boot Menu manager.
+Credits=http://TheOven.org
+Version=005
+Download_Level=2
+Level=7
+Selected=False
+Mandatory=False
+NoWarning=False
+Contact=http://TheOven.org
+Date=2017.02.01
+Depend=
+Disable=
+Web1=http://w7pese.cwcodes.net/Projects/Win7PESE/OtherOS/ISOImages.script
+Web2=http://yomi.cwcodes.net/Yomi/OtherOSY/ISOImages.script
+Web3=http://w8pese.cwcodes.net/Projects/Win8PESE/OtherOS/ISOImages.script
+Web4=http://win81se.cwcodes.net/Projects/Win8.1SE/OtherOS/ISOImages.script
+CertifiedBy=
+Certification=
+HistoryNotes01=
+History002=ChrisR Direct or Memory mapping added
+History003=0scar  Both: if grub4dos fails to run direct mapping (reading the ISO from disc) then grub4dos will try ram mapping
+History004=Lancelot Added DU Buttons - Date:2015.10.31
+History005=Lancelot - Add Compare button - Date:2017.02.01
+
+[Interface]
+Iso_Bevel1=Iso_Bevel1,1,12,5,5,546,72
+Iso_Bevel2=Iso_Bevel2,1,12,5,83,546,72
+Iso_Bevel3=Iso_Bevel3,1,12,5,161,546,72
+Iso_Bevel4=Iso_Bevel4,1,12,5,239,546,72
+IsoImage_CheckBox1="Enable ISO Image 1",1,3,10,10,130,18,False
+IsoImage_CheckBox2="Enable ISO Image 2",1,3,10,88,130,18,False
+IsoImage_CheckBox3="Enable ISO Image 3",1,3,10,166,130,18,False
+IsoImage_CheckBox4="Enable ISO Image 4",1,3,10,244,130,18,False
+IsoMapping_TextLabel1=Mapping(*),1,1,418,12,62,18,8,Normal
+IsoMapping_TextLabel2=Mapping(*),1,1,418,90,62,18,8,Normal
+IsoMapping_TextLabel3=Mapping(*),1,1,418,168,62,18,8,Normal
+IsoMapping_TextLabel4=Mapping(*),1,1,418,246,62,18,8,Normal
+IsoMapping_ScrollBox1=Both,1,4,481,10,65,21,Both,Memory,Direct
+IsoMapping_ScrollBox2=Both,1,4,481,88,65,21,Both,Memory,Direct
+IsoMapping_ScrollBox3=Both,1,4,481,166,65,21,Both,Memory,Direct
+IsoMapping_ScrollBox4=Both,1,4,481,244,65,21,Both,Memory,Direct
+IsoTitle_TextBox1="Bootmenu Title",1,0,10,49,160,21,"ISO 1"
+IsoTitle_TextBox2="Bootmenu Title",1,0,10,127,160,21,"ISO 2"
+IsoTitle_TextBox3="Bootmenu Title",1,0,10,205,160,21,"ISO 3"
+IsoTitle_TextBox4="Bootmenu Title",1,0,10,283,160,21,"ISO 4"
+ISO_TextLabel1="Select ISO Image 1",1,1,182,35,120,18,8,Normal
+ISO_TextLabel2="Select ISO Image 2",1,1,182,113,120,18,8,Normal
+ISO_TextLabel3="Select ISO Image 3",1,1,182,191,120,18,8,Normal
+ISO_TextLabel4="Select ISO Image 4",1,1,182,269,120,18,8,Normal
+IsoImage_FileBox1=%GlobalTemplates%\ISOImages\ISO_1.iso,1,13,180,49,314,20,file
+IsoImage_FileBox2=%GlobalTemplates%\ISOImages\ISO_2.iso,1,13,180,127,314,20,file
+IsoImage_FileBox3=%GlobalTemplates%\ISOImages\ISO_3.iso,1,13,180,205,314,20,file
+IsoImage_FileBox4=%GlobalTemplates%\ISOImages\ISO_4.iso,1,13,180,283,314,20,file
+OpenSourceFilesbutton1="Open Dir",1,8,496,47,50,24,OpenSourceFilesDir1,_OpenSourceFilesDir1_,False
+OpenSourceFilesbutton2="Open Dir",1,8,496,125,50,24,OpenSourceFilesDir2,_OpenSourceFilesDir2_,False
+OpenSourceFilesbutton3="Open Dir",1,8,496,203,50,24,OpenSourceFilesDir3,_OpenSourceFilesDir3_,False
+OpenSourceFilesbutton4="Open Dir",1,8,496,281,50,24,OpenSourceFilesDir4,_OpenSourceFilesDir4_,False
+MemoryMapping_TextLabel="(*) Direct mapping, the ISO file must be contiguous (not fragmented) on the support.",1,1,10,313,462,18,8,Normal
+MemoryMapping_TextLabel2="Both: If Grub4Dos fails to run Direct mapping (reading the ISO directly) then Grub4Dos will try Ram mapping.",1,1,10,327,536,18,8,Normal
+WebLabel_Plugin="Plugin Page",1,10,268,4,55,18,http://TheOven.org/index.php?board=9
+Button_Download=,1,8,334,-1,24,24,DownloadXXX,DoubleJDesignRavenna3dArrowDown0016016.bmp,False,False,_DownloadXXX_,False,"__DOWNLOAD Plugin"
+Button_Upload=,1,8,357,-1,24,24,UploadXXX,BokehliciaCaptivaSoftwareupload0016016.bmp,False,False,_UploadXXX_,False,"__UPLOAD Plugin (Admins Only)"
+Button_CompareEdit=,1,8,380,-1,24,24,CompareEditXXX,AmperossQetto2Move0016016.bmp,False,False,_CompareEditXXX_,False,"__DOWNLOAD and Compare with an Editor"
+
+[Variables]
+
+[Process]
+Echo,"Processing %ScriptTitle%..."
+If,Not,ExistVar,%BootSector%,If,ExistSection,%projectdir%\script.project,SetOtherOS,Run,%projectdir%\script.project,SetOtherOS
+If,Not,ExistSection,%scriptfile%,"Process_%BootSector%",Echo,"'%ScriptTitle%' not prepared for %BootSector%",Warn
+If,Not,ExistSection,%scriptfile%,"Process_%BootSector%",Exit,"'%ScriptTitle%' not prepared for %BootSector%"
+Run,%scriptfile%,Process_%BootSector%
+
+[Process_Grub4Dos]
+Echo,"Processing Grub4Dos boot manager..."
+If,Not,ExistDir,%OtherOS_Target%,DirMake,%OtherOS_Target%
+//--
+StrFormat,REPLACE,%OtherOS_Folder%,\,/,%OtherOS_Folder_Menu%
+If,-%OtherOS_Folder%-,Equal,--,Set,%OtherOS_Folder_Menu%,/
+Else,Set,%OtherOS_Folder_Menu%,/%OtherOS_Folder_Menu%/
+//--
+If,%IsoImage_CheckBox1%,Equal,True,Run,%ScriptFile%,G4D_ISO_Image1
+If,%IsoImage_CheckBox2%,Equal,True,Run,%ScriptFile%,G4D_ISO_Image2
+If,%IsoImage_CheckBox3%,Equal,True,Run,%ScriptFile%,G4D_ISO_Image3
+If,%IsoImage_CheckBox4%,Equal,True,Run,%ScriptFile%,G4D_ISO_Image4
+
+[G4D_ISO_Image1]
+If,Not,ExistFile,%IsoImage_FileBox1%,Call,Echo,"The selected ISO image 1 does not exist. It is not added",Warn
+Else,Begin
+StrFormat,FileName,%IsoImage_FileBox1%,%IsoImage_Filename1%
+If,ExistFile,%OtherOS_Target%\%IsoImage_Filename1%,FileDelete,%OtherOS_Target%\%IsoImage_Filename1%
+FileCopy,%IsoImage_FileBox1%,%OtherOS_Target%\%IsoImage_Filename1%
+TXTAddLine,%BootMenu%,"title %IsoTitle_TextBox1%",Append
+TXTAddLine,%BootMenu%,"find --set-root --ignore-floppies %OtherOS_Folder_Menu%%IsoImage_Filename1%",Append
+If,%IsoMapping_ScrollBox1%,Equal,Both,TXTAddLine,%BootMenu%,"map %OtherOS_Folder_Menu%%IsoImage_Filename1% (hd32) || map --mem %OtherOS_Folder_Menu%%IsoImage_Filename1% (hd32)",Append
+If,%IsoMapping_ScrollBox1%,Equal,Memory,TXTAddLine,%BootMenu%,"map --mem %OtherOS_Folder_Menu%%IsoImage_Filename1% (hd32)",Append
+If,%IsoMapping_ScrollBox1%,Equal,Direct,TXTAddLine,%BootMenu%,"map %OtherOS_Folder_Menu%%IsoImage_Filename1% (hd32)",Append
+Run,%ScriptFile%,GrubRest
+End
+
+[G4D_ISO_Image2]
+If,Not,ExistFile,%IsoImage_FileBox2%,Call,Echo,"The selected ISO image 2 does not exist. It is not added",Warn
+Else,Begin
+If,%IsoMapping_ScrollBox2%,Equal,Memory,Set,%mem%," --mem"
+Else,Set,%mem%,""
+StrFormat,FileName,%IsoImage_FileBox2%,%IsoImage_Filename2%
+If,ExistFile,%OtherOS_Target%\%IsoImage_Filename2%,FileDelete,%OtherOS_Target%\%IsoImage_Filename2%
+FileCopy,%IsoImage_FileBox2%,%OtherOS_Target%\%IsoImage_Filename2%
+TXTAddLine,%BootMenu%,"title %IsoTitle_TextBox2%",Append
+TXTAddLine,%BootMenu%,"find --set-root --ignore-floppies %OtherOS_Folder_Menu%%IsoImage_Filename2%",Append
+If,%IsoMapping_ScrollBox2%,Equal,Both,TXTAddLine,%BootMenu%,"map %OtherOS_Folder_Menu%%IsoImage_Filename2% (hd32) || map --mem %OtherOS_Folder_Menu%%IsoImage_Filename2% (hd32)",Append
+If,%IsoMapping_ScrollBox2%,Equal,Memory,TXTAddLine,%BootMenu%,"map --mem %OtherOS_Folder_Menu%%IsoImage_Filename2% (hd32)",Append
+If,%IsoMapping_ScrollBox2%,Equal,Direct,TXTAddLine,%BootMenu%,"map %OtherOS_Folder_Menu%%IsoImage_Filename2% (hd32)",Append
+Run,%ScriptFile%,GrubRest
+End
+
+[G4D_ISO_Image3]
+If,Not,ExistFile,%IsoImage_FileBox3%,Call,Echo,"The selected ISO image 3 does not exist. It is not added",Warn
+Else,Begin
+If,%IsoMapping_ScrollBox3%,Equal,Memory,Set,%mem%," --mem"
+Else,Set,%mem%,""
+StrFormat,FileName,%IsoImage_FileBox3%,%IsoImage_Filename3%
+If,ExistFile,%OtherOS_Target%\%IsoImage_Filename3%,FileDelete,%OtherOS_Target%\%IsoImage_Filename3%
+FileCopy,%IsoImage_FileBox3%,%OtherOS_Target%\%IsoImage_Filename3%
+TXTAddLine,%BootMenu%,"title %IsoTitle_TextBox3%",Append
+TXTAddLine,%BootMenu%,"find --set-root --ignore-floppies %OtherOS_Folder_Menu%%IsoImage_Filename3%",Append
+If,%IsoMapping_ScrollBox3%,Equal,Both,TXTAddLine,%BootMenu%,"map %OtherOS_Folder_Menu%%IsoImage_Filename3% (hd32) || map --mem %OtherOS_Folder_Menu%%IsoImage_Filename3% (hd32)",Append
+If,%IsoMapping_ScrollBox3%,Equal,Memory,TXTAddLine,%BootMenu%,"map --mem %OtherOS_Folder_Menu%%IsoImage_Filename3% (hd32)",Append
+If,%IsoMapping_ScrollBox3%,Equal,Direct,TXTAddLine,%BootMenu%,"map %OtherOS_Folder_Menu%%IsoImage_Filename3% (hd32)",Append
+Run,%ScriptFile%,GrubRest
+End
+
+[G4D_ISO_Image4]
+If,Not,ExistFile,%IsoImage_FileBox4%,Call,Echo,"The selected ISO image 4 does not exist. It is not added",Warn
+Else,Begin
+If,%IsoMapping_ScrollBox4%,Equal,Memory,Set,%mem%," --mem"
+Else,Set,%mem%,""
+StrFormat,FileName,%IsoImage_FileBox4%,%IsoImage_Filename4%
+If,ExistFile,%OtherOS_Target%\%IsoImage_Filename4%,FileDelete,%OtherOS_Target%\%IsoImage_Filename4%
+FileCopy,%IsoImage_FileBox4%,%OtherOS_Target%\%IsoImage_Filename4%
+TXTAddLine,%BootMenu%,"title %IsoTitle_TextBox4%",Append
+TXTAddLine,%BootMenu%,"find --set-root --ignore-floppies %OtherOS_Folder_Menu%%IsoImage_Filename4%",Append
+If,%IsoMapping_ScrollBox4%,Equal,Both,TXTAddLine,%BootMenu%,"map %OtherOS_Folder_Menu%%IsoImage_Filename4% (hd32) || map --mem %OtherOS_Folder_Menu%%IsoImage_Filename4% (hd32)",Append
+If,%IsoMapping_ScrollBox4%,Equal,Memory,TXTAddLine,%BootMenu%,"map --mem %OtherOS_Folder_Menu%%IsoImage_Filename4% (hd32)",Append
+If,%IsoMapping_ScrollBox4%,Equal,Direct,TXTAddLine,%BootMenu%,"map %OtherOS_Folder_Menu%%IsoImage_Filename4% (hd32)",Append
+Run,%ScriptFile%,GrubRest
+End
+
+[GrubRest]
+TXTAddLine,%BootMenu%,"map --hook",Append
+TXTAddLine,%BootMenu%,"root (hd32)",Append
+TXTAddLine,%BootMenu%,"chainloader (hd32)",Append
+TXTAddLine,%BootMenu%," ",Append
+
+[OpenSourceFilesDir1]
+If,%IsoImage_FileBox1%,Equal,"",Exit,"No Directory Specified"
+Else,Run,%scriptfile%,OpenSourceFilesDir,%IsoImage_FileBox1%
+
+[OpenSourceFilesDir2]
+If,%IsoImage_FileBox2%,Equal,"",Exit,"No Directory Specified"
+Else,Run,%scriptfile%,OpenSourceFilesDir,%IsoImage_FileBox2%
+
+[OpenSourceFilesDir3]
+If,%IsoImage_FileBox3%,Equal,"",Exit,"No Directory Specified"
+Else,Run,%scriptfile%,OpenSourceFilesDir,%IsoImage_FileBox3%
+
+[OpenSourceFilesDir4]
+If,%IsoImage_FileBox4%,Equal,"",Exit,"No Directory Specified"
+Else,Run,%scriptfile%,OpenSourceFilesDir,%IsoImage_FileBox4%
+
+[OpenSourceFilesDir]
+StrFormat,PATH,#1,%OpenFolder%
+If,Not,ExistDir,%OpenFolder%,DirMake,%OpenFolder%
+If,Not,ExistDir,%OpenFolder%,Message,"No folder around"
+Call,OpenDir,%OpenFolder%
+
+[AuthorEncoded]
+ISOImage.ico=5669,7559
+Logo=ISOImage.ico
+
+[EncodedFile-InterfaceEncoded-op20.bmp]
+lines=0
+0=eJyVkt1LU3EYx382esMuBFEKE8GLLL0IbyYhpEUI4aKytilTFN1xOrvxohpI9/0FlYESXUR2EXmxi4S9hYF4IZhOSdZMzJdtx+HwvO1sh2/P8cyxYFh9+TzPxXm+v+9z+J1z847ZxA5lprpMVZarEnbeGNC8vNSoI+E/5Z6YZs++Mk+QPTnkaaiAo4ee0LVPEcN/4tViTRjuNB7Jeh/cAxfPcEnNtY8hAW4ZwwqGVbCxL3k/D5zxC71x9AjoTsGRgG0jbY2K1siBfV2ybyjd2xkHr7HHIcO/CZh8ApdEfwIDKXASnAr6BDh4dG5mbVHJui727ar0VuQ/924tCtyNoTwgGFQGdZyxrHMfLgUuFYMShg4wIOrhVTNb3zVYdtCbQD+vQ4sqQwKhH/cLFQGx1C+W+EQWlC/Nyw0LqRUVt7fQtZPDvgtrDB2JHD1JnJrl8/dpjqjLipb3P9zG/Ti+qQirWJY1Yi0L06pW6F+QtJZf+grCEkOYrus5q/iJ06tgiwoLZ+0v3vyRnwEdoailtG6ufllVN1FXO36x6Pcd8wYogXJOrqDsB66+rTdPtV7/aGmcar0weeX4f6N2srrpQ/ON6Xvt3i7q9e+bz74uvqVQt7wPOn0c9b86DbV9tjlnR6n/o39kzmNQdPoblHVTL3ic48gvMDLQS8otYBgFIxGYMUPoD4zY5WddWriPgQkA+kkGrpoT3C0BAAAAAgAAACQAAADwAQAAAAAAAAEAAAAAAAAAAAAAAA
+
+[InterfaceEncoded]
+op20.bmp=568,758
+DoubleJDesignRavenna3dArrowDown0016016.bmp=622,830
+BokehliciaCaptivaSoftwareupload0016016.bmp=676,902
+AmperossQetto2Move0016016.bmp=893,1191
+
+[EncodedFile-AuthorEncoded-ISOImage.ico]
+lines=1
+0=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
+1=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
+
+[DownloadXXX]
+Call,DownloadXQ
+
+[UploadXXX]
+Call,UploadXMultiQ
+
+[EncodedFile-InterfaceEncoded-DoubleJDesignRavenna3dArrowDown0016016.bmp]
+lines=0
+0=eJzNk09Ik2Ecxw06BF2KqG5ih1EgYZZu7+v7vnu3d++2MpelRFHgQZEaJLVIXSxrW4Wauf7Nwha2rQ7dOgT9IQT1EkQHi+hSHfRSUZrMcp389PjSoUib3vrB9/I8fD78fr+Hxwi0LS+yyi6ySWSVyGqRZUUl1rnr1/3vBfy3+TTxkabuAzx4dp+lsu/G31LRXIrjaCmeVjtfpj4v2jH+YQwpWIYc3orctgUptJkT/UcWxc/1rLXYqYpKqGcklEglcns5DuF48uLhPx2TUxOYIRWlU8PZraOdU1GjMsop4RO9+DucfM1NzuvIfctR3Wai9hq4rvrREybOCy608xpqrAqlQzhObiOSbv2Ln8nPsDvsZ33dSoob1mE7XIIsetAvCUePG63TiRpXUE47rJ0MvRz8wzH9fZqR0SHSj1LUhn2s8a6gMi7hTm7HddmLftHA2aVT2mJjY3Mx7naJ/I/8vHN0Zc5avKNLw+gP4O7bgeuKD73XQyDqI5QM8ur96IJ7jKUiFi8nDDwDezBuCsf1amsnA4Opgm8Y7jtu8UrSj3lnL+btOjypXRg3dpIdThfkjyWCFu9M1eC7tx/vXeFIC8etWjKL4IPdTRZfFqtAvua1PJ5sPWamnuxIpiD/9Plj4ukIh3oaqGk3KG+0sWHfWhp7DvJm7PWS/9FcZmdnF+R+AlbU23p4nNNyyS9Nykn1ckktzkzPC0osS83LSzROcSwqyi93yS/PMzAwNAMivaTcAoZRMPxAGQuEZmPCLu9y8YwcAxMAHjMRfb+2diEBAAAAAgAAAEQAAAAGAgAAAAAAAAEAAAAAAAAAAAAAAA
+
+[EncodedFile-InterfaceEncoded-BokehliciaCaptivaSoftwareupload0016016.bmp]
+lines=0
+0=eJytU21LWmEYbrAfsP0De4H2pRcqRq+0RllUZkav1O+YIH2JPvUhKKJfUE3aaCNQQR3pYWDTPCpBMKUxSczjZDB0Q8UPV/d9L0tdg33YAxfn5nq5n+c85z4vDa8e18l6TnhGeEJ4SnhUpxP+xa1euQD8V5RKJeTzeeRyOWSzWQHXzLH2t1yxWEQikYDb7cXu7iHW1/exuron4Jo51tjD3tqsw3GC+fn36O39hJ6eh8Eae9hb2SMYjGB42Iu+Pv8/gb2cKb+v2fwGAwOBGvhpTzfhg9S1utn8FuW7MplOMDQUwMhIgHrfY3Mzio2Nz1Uce9jLGc5mMhni/WhuPoROt4/6+td3ODpKwGqNV3HsYS9nOBuLfUFLyzG6ulzEnVXB4/kOpzPzB89eznD24iKKxkar9NPrg7fwYG7OBp/vGxRFw+ysDaOjnjudvZzhbDR6iY4OO/V0YHJSxdiYiq2trygUSri+zuLq6ofU29tx0djT2WmTDGdTqbRw3d1O+jYfMTGhYno6TL1zKC+uTaawaDrdHtrajiWjaWn5BgsLfhgMIZoPL6amQlKvrJzT/gUkkwUsL58Lx2hoOJAnZ8rzbLF4YTSG6d18dAY3nfMUg4MK7RmULGu/oUqea4tFqZi/JGZmwnJGgyEg8zU+fip3otcrdJcRusMQ2tt5vl3iVdVU1T9gt6exuMi+exiNZ2htfYempgNBf78LS0sRsPehf1DTfoq2sxPH2tolnTEm4Jo51tLpX1XZG70Y6I54nNNyys9OzcjJTM5MdE4sKMksSwzOTyspTyxKLS3IyU9MMTAwNAMivaTcAoZRMPxAGQuEtmHCLs9kcFmVgQkAJ9URXc7wHxQBAAAAAgAAAEQAAAA8AgAAAAAAAAEAAAAAAAAAAAAAAA
+
+[CompareEditXXX]
+Call,CompareEdit
+
+[EncodedFile-InterfaceEncoded-AmperossQetto2Move0016016.bmp]
+lines=0
+0=eJxtk1lIVFEYxw16agEVzTRncRtt0cx0NCu0QlsgyyCih7Cgh6KFNgQzSsqnFohUEm3FlqmsVGxxxoxSyYkpTcctsiKXtCZ1mPXee878++5o4YMf/DjfnXN+//sdmLt2s3amj7e0RAzhO8kMH7XPv/KfPcF0NXd7RXRg3ufCoDMD+nkFQ8Z5BYOTDBmDCgYNgXlfCudsq4yZzg3I7ToSfMHmVJQBilLi6pT1X097IZdsroBc87GpblB+zwHVNUBJ50JLBAQUSVhQIkJB/X+KBYQWCd4s1XUgKL/3kOz6HTYpQ4scbq9fLsL/ooAV50ahueKE8oYI1TWBoLVcgLKMKJWf6T1XHILv8WaVothyMlwHqG+KmHVJxKHbFnjs49j5zAnf2xyqexLC74hewm6JdE6AmjLDH1BGseVU2E17VeRjIIBmPFhhASQnnneK0Fy2IYaIKHEi9C6DXxmDWscQeY+yKkREPpLfaa+JuO/Wh5C/9bEd4C7INWyxw/bbCmnUiuZeK9bpHDhfY0FkuQvKSo6ohxKiqoCIu+76qEp3XUQtkFDL0DYm2x4863bjdAdwthfY0QKsMYjgYNDTAQVlqJ9yLHwBaB66DdFPhbol9TRLDUPsS4bWMQ+sYw6kVjuwhmbaXzuOvTVWVJtpPkqpbx/DYp0b0a+AmGrBsKhWMMS+AWL1dDcipZGhctiDHSYRbRY3OSIhYdwlYaI4cppdCGsAFr8Q6uNeiU/iacalrxkSyI1ropxGCXEtDGs/cmxq50hrlvCkx+G9W/F3DzQNDLITpxerEhrFE0ntwLK3DInvGLTvGZI/0BytHInka0wce9tpDo+E0gEPwuncUkJ2ljeJuUlGzNcamS3pA8iVkEJO6ieOVR2EmXpaN3Zz7PviQbyJPMrXfgSSjcy+2mQPlv+DaR3CrrSvQGon0caxmry0Lo508tJ7KIf6BLqHvLeyC0j/RpiFnKnfQEa3sDujj1syR4CMn0AmsZ76DSMTvfe3X8C6Pv4n0yzsme4bzO6yB2f1s6NZ/VyX9YPVZU+yhcjqlx5kD9FetyNkqvMXP3mcf3ick3XMLUgtyi8uDkwtKck38s0vSzUwMDQDIr2k3AKGUTDMgRkLhFZixi4vra37hIEJABkJC8Gkai7oAQAAAAIAAAA3AAAAIgMAAAAAAAABAAAAAAAAAAAAAAA
+

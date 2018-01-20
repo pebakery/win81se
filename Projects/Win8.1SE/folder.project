@@ -1,0 +1,12 @@
+[main]
+Title=Win8.1SE
+Author=ChrisR, JFX, Lancelot, Galapo
+Description='Win8.1SE' project supports Win8.1 RTM version x86 and x64.#$x'Win8.1SE' uses ADK for Win8.1, it is unfortunately not compatible with Windows XP, 2003 and Vista HostOS.
+Download_Level=0
+Version=005
+Selected=True
+Contact=http://Theoven.org
+Date=2015.01.10
+
+[Links]
+Projects\MyPlugins_Direct\*.*

@@ -1,0 +1,538 @@
+[Main]
+Title=Multi-WIM
+Type=Plugin
+Author=2aCD
+Description=Create Grub4Dos- or BCD- Bootmenu entries for multiple WIM-Files --- Create wimfile in previous compilation and copy it in dir, that you select
+Credits=http://TheOven.org
+Version=022
+Download_Level=2
+Level=7
+Selected=False
+Mandatory=False
+NoWarning=False
+Contact=http://TheOven.org/index.php?board=9.0
+Date=2017.02.02
+Depend=
+Disable=
+Web1=http://w7pese.cwcodes.net/Projects/Win7PESE/OtherOS/zMultiWim.script
+Web2=http://yomi.cwcodes.net/Yomi/OtherOSY/zMultiWim.script
+Web3=http://w8pese.cwcodes.net/Projects/Win8PESE/OtherOS/zMultiWim.script
+Web4=http://win81se.cwcodes.net/Projects/Win8.1SE/OtherOS/zMultiWim.script
+CertifiedBy=
+Certification=
+HistoryNotes01=
+History003=ChrisR - Using bcdedit.exe (x86) on a x64 HostOS works
+History004=Lancelot - SetOtherOS support added
+History005=2aCD - Add option for programs from another source architecture
+History006=2aCD - Remove Backslash for different programs-folder, fix OpenDir buttons
+History007=2aCD - Add option for copy programs they are not enabled in master build
+History008=ChrisR - "Programs x64" replaced by Programs_x64
+History009=2aCD - Add Grub4Dos Entries for use without BCD-Menu
+History010=2aCD - Add locale (thanks ChrisR for hint)
+History011=ChrisR - Check if Wim files selected exist and minor things
+History012=2aCD - Fix patching BOOTMGR with Winbuilder 080
+History013=ChrisR - WinBCD-Menu option available for Win8 8.1. EFI BCD Bootmenu entries. bootmenupolicy legacy for Win8 8.1
+History015=ChrisR - Displayorder for efi bcd
+History016=ChrisR - Added EFI compatible. For wim files that are not compatible with UEFI (eg: x86 is not EFI compatible on most PC except some tablets)
+History017=ChrisR - Adjust BCD for Win8/8.1/10 32/64bit. Add bootia32.efi in x64 build or bootx64.efi in x86 build FOR dual boot 32/64 bit UEFI.
+History018=ChrisR - Use folders for OpenDir
+History019=ChrisR - Add BCD Path \windows\system32\boot\winload.exe(.efi). It works without this input, but it is probably better to have as done by default by MS
+History020=ChrisR - Add Exclamation.bmp for help button. Add note for installing Imdisk used to create bootable image for dual boot 32/64 bit UEFI
+History021=Lancelot - Added DU Buttons - Date:2016.01.30
+History022=Lancelot - Add Compare button - Date:2017.02.02
+
+[Interface]
+ReadMe_Button="Read Me",1,8,435,24,80,25,Read_ME,,True,_Read_ME_,True
+BcdGrub_ScrollBox=WinBCD-Menu,1,4,14,7,150,21,WinBCD-Menu,Grub4Dos-Menu,_Process_Visible_,True
+GrubChoiceNote_TextLabel="The Grub4Dos-enty for standard-wim is defined as Volume name in 'Create ISO' or  'Copy to USB-Device'#$x(Only for Windows 7 SP0/SP1)",0,1,15,41,268,42,8,Normal
+BcdStdDesc_TextBox="Bootmenu-Description for Standard-Entry in BCD-Menu",1,0,12,54,262,21,"WinPE_SE x64"
+AddUEFI_CheckBox="Add UEFI in Description for BCD-EFI Entries",1,3,290,54,245,18,True
+Timeout_TextLabel="Timeout - Seconds until the highlighted choice will be started automatically:",1,1,11,80,361,18,8,Normal
+Timeout_NumberBox=Timeout_NumberBox,1,2,374,77,46,22,5,0,999,1
+pCheckBox2="Enable 2. WIM-File",1,3,18,106,120,18,False
+pCheckBox3="Enable 3. WIM-File",1,3,18,177,120,18,False
+pCheckBox4="Enable 4. WIM-File",1,3,18,248,120,18,False
+Wim2_BCD_TextLabel2="Adjust BCD for Win8/8.1/10",1,1,155,108,134,18,8,Normal
+Wim3_BCD_TextLabel2="Adjust BCD for Win8/8.1/10",1,1,155,179,134,18,8,Normal
+Wim4_BCD_TextLabel2="Adjust BCD for Win8/8.1/10",1,1,155,250,134,18,8,Normal
+Wim2_Win8_CheckBox=32bit,1,3,290,106,49,18,True
+Wim3_Win8_CheckBox=32bit,1,3,290,177,49,18,False
+Wim4_Win8_CheckBox=32bit,1,3,290,248,49,18,False
+Wim2_Win8x64_CheckBox=64bit,1,3,340,106,49,18,False
+Wim3_Win8x64_CheckBox=64bit,1,3,340,177,49,18,False
+Wim4_Win8x64_CheckBox=64bit,1,3,340,248,49,18,False
+Wim2_EFI_CheckBox="EFI compatible",1,3,416,106,100,18,True
+Wim3_EFI_CheckBox="EFI compatible",1,3,416,177,100,18,False
+Wim4_EFI_CheckBox="EFI compatible",1,3,416,248,100,18,False
+pTextBox2=Bootmenu-Description,1,0,18,141,200,21,"WinPE_SE  x86"
+pTextBox3=Bootmenu-Description,1,0,18,212,200,21,"WinPE_SE Mini"
+pTextBox4=Bootmenu-Description,1,0,18,283,200,21,"WinPE_SE Maxi"
+Wim2_Bevel=Wim2_Bevel,1,12,11,103,506,65
+Wim3_Bevel=Wim3_Bevel,1,12,11,174,506,65
+Wim4_Bevel=Wim4_Bevel,1,12,11,245,506,65
+pFileBox2=%GlobalTemplates%\MultiWim\bootx86.wim,1,13,234,141,230,20,file
+pFileBox3=%GlobalTemplates%\MultiWim\boot3.wim,1,13,234,212,230,20,file
+pFileBox4=%GlobalTemplates%\MultiWim\boot4.wim,1,13,234,283,230,20,file
+pTextLabel2="Select Wimfile 2",1,1,238,127,80,18,8,Normal
+pTextLabel3="Select Wimfile 3",1,1,238,198,80,18,8,Normal
+pTextLabel4="Select Wimfile 4",1,1,238,269,80,18,8,Normal
+Wim2_OpenSourceFile_button="Open Dir",1,8,466,139,46,24,OpenSourceFilesDir2,,True,_OpenSourceFilesDir2_,True
+Wim3_OpenSourceFile_button="Open Dir",1,8,466,210,46,24,OpenSourceFilesDir3,,True,_OpenSourceFilesDir3_,True
+Wim4_OpenSourceFile_button="Open Dir",1,8,466,281,46,24,OpenSourceFilesDir4,,True,_OpenSourceFilesDir4_,True
+pBevel5=pBevel5,1,12,11,324,506,67
+pCheckBox5="Copy programs folder from previous build with another source-architecture",1,3,18,326,445,21,False
+pButtonHelp2=,1,8,485,328,26,26,pButtonHelp2,Exclamation.bmp,True,_pButtonHelp2_,True
+pTextLabel16="Select Folder, that  contains Program-Folder (programs or programs_x64)",1,1,18,347,364,18,8,Normal
+pFileBox5=%GlobalTemplates%\MultiWim\,1,13,18,363,446,20,dir
+OpenSourceFilesbutton5="Open Dir",1,8,466,361,46,24,OpenSourceFilesDir5,,True,_OpenSourceFilesDir5_,True
+pBevel6=pBevel6,1,12,11,397,506,86
+pCheckBox6="Copy folder with programs from previous build they are disabled in the master build",1,3,18,399,426,21,False
+pButtonHelp3=,1,8,485,401,26,26,pButtonHelp3,Exclamation.bmp,True,_pButtonHelp3_,True
+pTextLabel17="Select Folder, that  contains this Programs",1,1,18,420,364,18,8,Normal
+pFileBox6=%GlobalTemplates%\MultiWim\AdditionalPrograms\,1,13,18,436,446,20,dir
+OpenSourceFilesbutton6="Open Dir",1,8,466,434,46,24,OpenSourceFilesDir6,,True,_OpenSourceFilesDir6_,True
+pCheckBox16="Do not overwrite existing files",1,3,18,459,312,21,True
+pBevel7=pBevel7,1,12,11,497,506,67
+pCheckBox7="Add bootia32.efi in x64 build or bootx64.efi in x86 build FOR dual boot 32/64 bit UEFI",1,3,18,499,460,21,False
+pButtonHelp4=,1,8,485,501,26,26,pButtonHelp4,Exclamation.bmp,True,_pButtonHelp4_,True
+pTextLabel18="Select Folder, that  contains bootia32.efi or bootx64.efi",1,1,18,518,364,18,8,Normal
+pFileBox7=%GlobalTemplates%\MultiWim\,1,13,18,536,446,20,dir
+OpenSourceFilesbutton7="Open Dir",1,8,466,534,46,24,OpenSourceFilesDir7,,True,_OpenSourceFilesDir7_,True
+WebLabel_Plugin="Plugin Page",1,10,338,4,55,18,http://TheOven.org/index.php?board=9
+Button_Download=,1,8,403,21,24,24,DownloadXXX,DoubleJDesignRavenna3dArrowDown0016016.bmp,False,False,_DownloadXXX_,False,"__DOWNLOAD Plugin"
+Button_Upload=,1,8,403,-1,24,24,UploadXXX,BokehliciaCaptivaSoftwareupload0016016.bmp,False,False,_UploadXXX_,False,"__UPLOAD Plugin (Admins Only)"
+Button_CompareEdit=,1,8,426,-1,24,24,CompareEditXXX,AmperossQetto2Move0016016.bmp,False,False,_CompareEditXXX_,False,"__DOWNLOAD and Compare with an Editor"
+
+[Variables]
+%ProgramFolder%=MultiWim
+%WIM2_GUID%={2e488718-de32-11dd-8808-005056a95ed2}
+%WIM3_GUID%={2e488718-de32-11dd-8808-005056a95ef0}
+%WIM4_GUID%={2e488718-de32-11dd-8808-005056a95ee0}
+%MEM_GUID%={223021e8-6391-11e4-b339-005056c00008}
+%BcdEditExe%=
+%BCDStore%=#$q%TargetDir%\boot\bcd#$q
+%BCDefiStore%=#$q%TargetDir%\efi\microsoft\boot\bcd#$q
+%tmout%=5
+//
+%Help2_1%="Would you like to use Wims with different source architecture,"
+%Help2_2%="enable in Plugin: #$qCdDrive #$pCDDrive#$p - X: - Y:#$q following option: #$qUse different Programs-Folder for x64-Architecture#$q."
+%Help2_3%="After build with another source copy the programs or programs_x64 folder into '#$pGlobalTemplate#$p\MultiWim'"
+%Help2_4%="and select the folder that contains now the programs or programs_x64 folder."
+%Help2_5%="Enable the option to copy this folder."
+//
+%Help3_1%="Would you like to use programs on Cd in combination with the 2nd or 3th WimFile they are not included in the master build later,"
+%Help3_2%="copy the program folder from this programs to #$pGlobalTemplate#$p\MultiWim\AdditionalPrograms."
+%Help3_3%="If MultiWim enabled with this option, all program folders inside AdditionalPrograms are additional copied to #$pTarget_Prog#$p."
+//
+%Help4_1%="Would you like to enable dual boot 32/64 bit UEFI to start both 32 or 64 bit UEFI fcomputers,"
+%Help4_2%="Option only available for Windows 8, 8.1 and following. Windows 7, Vista and Server 2008 only support UEFI on 64-bit systems."
+%Help4_3%="In a 64 bit build, add the 32 bit boot.wim with one of the above options"
+%Help4_4%="And add bootia32.efi file to be able to also start also on a 32 bit UEFI PC."
+%Help4_5%="Inversely, In a 32 bit build, add the 64 bit boot.wim with one of the above options"
+%Help4_6%="And add bootx64.efi file to be able to also start also on a 64 bit UEFI PC."
+%Help4_7%="Enable the option to copy bootia32.efi or bootx64.efi from this folder."
+%Help4_8%="If you want, in the same way, you can also add memtest.efi from the other architecture."
+%Help4_9%="By copying, renaming it in memtestx86.efi or memtestx64.efi in the same folder."
+%Help4_10%="Note: to create the bootable image 32/64 bit UEFI for creating ISO. Imdisk (virtual disk driver) is used."
+%Help4_11%="It is automatically installed if it is not already on your computer."
+
+[Process]
+Echo,"Processing Multiboot-WIM..."
+//ReadENV
+If,Not,ExistVar,%BootSector%,If,ExistSection,%projectdir%\script.project,SetOtherOS,Run,%projectdir%\script.project,SetOtherOS
+If,%BcdGrub_ScrollBox%,Equal,Grub4Dos-Menu,Begin
+If,Not,%BootSector%,Equal,Grub4DOS,Run,%scriptfile%,Warn_Echo,"'%ScriptTitle%' Grub4dos menu selected incompatible with %BootSector% boot manager"
+If,Not,%BootSector%,Equal,Grub4DOS,Exit,"'%ScriptTitle%' Grub4dos menu selected incompatible with %BootSector% boot manager"
+End
+//-
+If,Not,ExistFile,%Tools%\%SourceArch%\bcdedit.exe,FileCopy,%InstallSRC%\Windows\System32\bcdedit.exe,%Tools%\%SourceArch%
+Set,%BcdEditExe%,%Tools%\%OSArch%\bcdedit.exe
+If,Not,ExistFile,%BcdEditExe%,Set,%BcdEditExe%,%Tools%\x86\bcdedit.exe
+//source x64 host x86
+If,Not,ExistFile,%BcdEditExe%,Message,"%Tools%\%OSArch%\bcdedit.exe NOT found. Multi-WIM Stop Now",Error
+If,Not,ExistFile,%BcdEditExe%,Exit,"%Tools%\%OSArch%\bcdedit.exe NOT found. Multi-WIM Stop Now"
+//-
+If,Not,ExistDir,%OtherOS_Target%,DirMake,%OtherOS_Target%
+//-
+If,%BcdGrub_ScrollBox%,Equal,WinBCD-Menu,Run,%ScriptFile%,WinBCD_Menu
+If,%BcdGrub_ScrollBox%,Equal,Grub4Dos-Menu,Run,%ScriptFile%,Grub4Dos_Menu
+//-
+StrFormat,CTRIM,%pFileBox5%,\,%Source_ProgPath%
+If,%pCheckBox5%,Equal,True,run,%ScriptFile%,CopyPrograms,%Source_ProgPath%
+StrFormat,CTRIM,%pFileBox6%,\,%Source_ProgPath%
+If,%pCheckBox6%,Equal,True,run,%ScriptFile%,CopyProgramsCustom,%Source_ProgPath%
+//-
+StrFormat,CTRIM,%pFileBox7%,\,%Addboot3264Path%
+If,%pCheckBox7%,Equal,True,run,%ScriptFile%,Addboot3264,%Addboot3264Path%
+//-
+FileDelete,%TargetDir%\boot\*.LOG*
+
+[WinBCD_Menu]
+// Windows Bootmanager after Grub4Dos
+Set,%AddUEFI%,""
+If,ExistFile,%TargetDir%\efi\microsoft\boot\bcd,Begin
+Set,%BcdEFIexist%,Yes
+If,%AddUEFI_CheckBox%,Equal,True,Set,%AddUEFI%," UEFI"
+End
+Else,Set,%BcdEFIexist%,No
+//-
+If,%pCheckBox2%,Equal,True,Run,%ScriptFile%,BCD_WIM,2
+If,%pCheckBox3%,Equal,True,Run,%ScriptFile%,BCD_WIM,3
+If,%pCheckBox4%,Equal,True,Run,%ScriptFile%,BCD_WIM,4
+//-
+Set,%tmout%,%Timeout_NumberBox%
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /set {default} description #$q%BcdStdDesc_TextBox%#$q",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /set {bootmgr} timeout %tmout%",%Tools%\%OSArch%\
+If,%BcdEFIexist%,Equal,Yes,Begin
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set {default} description #$q%BcdStdDesc_TextBox%%AddUEFI%#$q",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set {bootmgr} timeout %tmout%",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set {memdiag} description #$qWindows Memory Diagnostic %SourceArch%%AddUEFI%#$q",%Tools%\%OSArch%\
+End
+
+[BCD_WIM]
+If,Not,ExistFile,%pFileBox#1%,Run,%ScriptFile%,Warn_Message,"WimFile #1 selected does not exist. It will not be added"
+Else,Begin
+strformat,filename,%pFileBox#1%,%WIM#1_Filename%
+Echo,"Copy %WIM#1_Filename%..."
+FileCopy,%pFileBox#1%,%OtherOS_Target%
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /create %WIM#1_GUID% /d #$q%pTextBox#1%#$q /application osloader",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /set %WIM#1_GUID% locale %DistLang%",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /set %WIM#1_GUID% systemroot \Windows",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /set %WIM#1_GUID% detecthal Yes",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /set %WIM#1_GUID% winpe Yes",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /set %WIM#1_GUID% EMS Yes",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /set %WIM#1_GUID% Quietboot Yes",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /set %WIM#1_GUID% path \windows\system32\boot\winload.exe",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /set %WIM#1_GUID% osdevice ramdisk=[boot]\boot\img\%WIM#1_Filename%#$c{7619dcc8-fafe-11d9-b411-000476eba25f}",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /set %WIM#1_GUID% device ramdisk=[boot]\boot\img\%WIM#1_Filename%#$c{7619dcc8-fafe-11d9-b411-000476eba25f}",%Tools%\%OSArch%\
+// Win8: Show progress bars "windows is loading". Win8 x64 (patch drivers signing) add: NoIntegrityChecks 1 / loadoptions DISABLE_INTEGRITY_CHECKS
+If,%Wim#1_Win8x64_CheckBox%,Equal,True,Begin
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /set %WIM#1_GUID% bootmenupolicy legacy",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /set %WIM#1_GUID% NoIntegrityChecks Yes",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /set %WIM#1_GUID% loadoptions DISABLE_INTEGRITY_CHECKS",%Tools%\%OSArch%\
+End
+Else,Begin
+If,%Wim#1_Win8_CheckBox%,Equal,True,ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /set %WIM#1_GUID% bootmenupolicy legacy",%Tools%\%OSArch%\
+End
+//-
+If,%BcdEFIexist%%Wim#1_EFI_CheckBox%,Equal,YesTrue,Begin
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /create %WIM#1_GUID% /d #$q%pTextBox#1%%AddUEFI%#$q /application osloader",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set %WIM#1_GUID% locale %DistLang%",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set %WIM#1_GUID% systemroot \Windows",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set %WIM#1_GUID% detecthal Yes",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set %WIM#1_GUID% winpe Yes",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set %WIM#1_GUID% EMS Yes",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set %WIM#1_GUID% Quietboot Yes",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set %WIM#1_GUID% path \windows\system32\boot\winload.efi",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set %WIM#1_GUID% osdevice ramdisk=[boot]\boot\img\%WIM#1_Filename%#$c{7619dcc8-fafe-11d9-b411-000476eba25f}",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set %WIM#1_GUID% device ramdisk=[boot]\boot\img\%WIM#1_Filename%#$c{7619dcc8-fafe-11d9-b411-000476eba25f}",%Tools%\%OSArch%\
+// Win8 Win8 x64 : Show progress bars "windows is loading".
+If,%Wim#1_Win8x64_CheckBox%,Equal,True,ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set %WIM#1_GUID% bootmenupolicy legacy",%Tools%\%OSArch%\
+If,%Wim#1_Win8_CheckBox%,Equal,True,ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set %WIM#1_GUID% bootmenupolicy legacy",%Tools%\%OSArch%\
+End
+//
+If,#1,Equal,2,Begin
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /displayorder {default} %WIM2_GUID%",%Tools%\%OSArch%\
+If,%BcdEFIexist%%Wim#1_EFI_CheckBox%,Equal,YesTrue,ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /displayorder {default} %WIM2_GUID%",%Tools%\%OSArch%\
+End
+If,#1,Equal,3,Begin
+If,%pCheckBox2%,Equal,False,ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /displayorder {default} %WIM3_GUID%",%Tools%\%OSArch%\
+If,%pCheckBox2%,Equal,True,ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /displayorder {default} %WIM2_GUID% %WIM3_GUID%",%Tools%\%OSArch%\
+If,%BcdEFIexist%%Wim#1_EFI_CheckBox%,Equal,YesTrue,Begin
+If,%pCheckBox2%,Equal,False,ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /displayorder {default} %WIM3_GUID%",%Tools%\%OSArch%\
+If,%pCheckBox2%,Equal,True,ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /displayorder {default} %WIM2_GUID% %WIM3_GUID%",%Tools%\%OSArch%\
+End
+End
+If,#1,Equal,4,Begin
+If,%pCheckBox2%,Equal,False,If,%pCheckBox3%,Equal,False,ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /displayorder {default} %WIM4_GUID%",%Tools%\%OSArch%\
+If,%pCheckBox2%,Equal,False,If,%pCheckBox3%,Equal,True,ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /displayorder {default} %WIM3_GUID% %WIM4_GUID%",%Tools%\%OSArch%\
+If,%pCheckBox2%,Equal,True,If,%pCheckBox3%,Equal,False,ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /displayorder {default} %WIM2_GUID% %WIM4_GUID%",%Tools%\%OSArch%\
+If,%pCheckBox2%,Equal,True,If,%pCheckBox3%,Equal,True,ShellExecute,Hide,%BcdEditExe%,"/store %BCDStore% /displayorder {default} %WIM2_GUID% %WIM3_GUID% %WIM4_GUID%",%Tools%\%OSArch%\
+If,%BcdEFIexist%%Wim#1_EFI_CheckBox%,Equal,YesTrue,Begin
+If,%pCheckBox2%,Equal,False,If,%pCheckBox3%,Equal,False,ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /displayorder {default} %WIM4_GUID%",%Tools%\%OSArch%\
+If,%pCheckBox2%,Equal,False,If,%pCheckBox3%,Equal,True,ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /displayorder {default} %WIM3_GUID% %WIM4_GUID%",%Tools%\%OSArch%\
+If,%pCheckBox2%,Equal,True,If,%pCheckBox3%,Equal,False,ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /displayorder {default} %WIM2_GUID% %WIM4_GUID%",%Tools%\%OSArch%\
+If,%pCheckBox2%,Equal,True,If,%pCheckBox3%,Equal,True,ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /displayorder {default} %WIM2_GUID% %WIM3_GUID% %WIM4_GUID%",%Tools%\%OSArch%\
+End
+End
+End
+
+[Grub4Dos_Menu]
+// Grub4Dos Bootmanager entries
+If,Not,ExistFile,%ProjectTemp%\TempExtractFolder\%ProgramFolder%\hexalter.exe,Begin
+ExtractFile,%ScriptFile%,Folder,hexalter.exe,%ProjectTemp%\TempExtractFolder\%ProgramFolder%
+End
+IniRead,%ProjectDir%\script.project,IniVariables,OS,%OS%
+IniRead,%ProjectDir%\script.project,IniVariables,OSServicePack,%OSServicePack%
+If,Not,%OS%,Equal,Win7,Run,%ScriptFile%,ErrorMsg,"'%ScriptTitle%' Only for Windows 7 SP0/SP1 sources"
+If,Not,%OSServicePack%,Equal,SP0,If,Not,%OSServicePack%,Equal,SP1,Run,%ScriptFile%,ErrorMsg,"'%ScriptTitle%' Only for Windows 7 SP0/SP1 sources"
+//-
+If,%pCheckBox4%,Equal,True,Run,%ScriptFile%,GRUB_WIM,4
+If,%pCheckBox3%,Equal,True,Run,%ScriptFile%,GRUB_WIM,3
+If,%pCheckBox2%,Equal,True,Run,%ScriptFile%,GRUB_WIM,2
+
+[GRUB_WIM]
+If,Not,ExistFile,%pFileBox#1%,Run,%ScriptFile%,Warn_Message,"WimFile #1 selected does not exist. It will not be added"
+Else,Begin
+strformat,filename,%pFileBox#1%,%WIM#1_Filename%
+Echo,"Copy %WIM#1_Filename%..."
+FileCopy,%pFileBox#1%,%OtherOS_Target%
+//
+FileCopy,%SourceDir%\bootmgr,%TargetDir%\BOOTMGR#1
+FileCopy,%SourceDir%\boot\bcd,%TargetDir%\boot\bc#1
+If,%OSServicePack%,Equal,SP0,ShellExecute,Hide,%ProjectTemp%\TempExtractFolder\%ProgramFolder%\hexalter.exe,"#$q%TargetDir%\BOOTMGR#1#$q#$s0x105E=0xEB#$c0x08#$s0x54696=0x3#1"
+If,%OSServicePack%,Equal,SP1,ShellExecute,Hide,%ProjectTemp%\TempExtractFolder\%ProgramFolder%\hexalter.exe,"#$q%TargetDir%\BOOTMGR#1#$q#$s0x105E=0xEB#$c0x08#$s0x54735=0x3#1"
+ShellExecute,Hide,%BcdEditExe%,"/store #$q%TargetDir%\boot\bc#1#$q /set {bootmgr} nointegritychecks Yes",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store #$q%targetdir%\Boot\bc#1#$q /set {bootmgr} locale %DistLang%",%Tools%\%OSArch%\
+//
+ShellExecute,Hide,%BcdEditExe%,"/store #$q%TargetDir%\boot\bc#1#$q /set {default} osdevice ramdisk=[boot]\boot\img\%WIM#1_Filename%#$c{7619dcc8-fafe-11d9-b411-000476eba25f}",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store #$q%TargetDir%\boot\bc#1#$q /set {default} device ramdisk=[boot]\boot\img\%WIM#1_Filename%#$c{7619dcc8-fafe-11d9-b411-000476eba25f}",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store #$q%targetdir%\Boot\bc#1#$q /set {default} locale %DistLang%",%Tools%\%OSArch%\
+//
+TXTAddLine,%BootMenu%," ",Prepend
+TXTAddLine,%BootMenu%,"chainloader /BOOTMGR#1",Prepend
+TXTAddLine,%BootMenu%,"title %pTextBox#1%",Prepend
+End
+
+[CopyPrograms]
+Echo,"Copy programs from another SourceArchitecture..."
+If,%SourceArch%,Equal,x86,Begin
+If,Not,ExistDir,#1\Programs_x64,Run,%ScriptFile%,Warn_Message,"#1\Programs_x64 does not exist. It will not be added"
+Else,DirCopy,#1\Programs_x64,%TargetDir%
+End
+If,%SourceArch%,Equal,x64,Begin
+If,Not,ExistDir,#1\Programs,Run,%ScriptFile%,Warn_Message,"#1\Programs does not exist. It will not be added"
+Else,DirCopy,#1\Programs,%TargetDir%
+End
+
+[CopyProgramsCustom]
+Echo,"Copy aditional programs from another Wim..."
+If,Not,ExistDir,#1,Run,%ScriptFile%,Warn_Message,"#1 does not exist. It will not be added"
+Else,Begin
+If,%pCheckBox16%,Equal,True,Begin
+If,Not,ExistDir,%Target_Prog%,DirMake,%Target_Prog%
+FileCopy,"#1\*.*",%Target_Prog%,Preserve,NoWarn
+End
+Else,FileCopy,"#1\*.*",%Target_Prog%
+End
+
+[Addboot3264]
+If,Not,ExistFile,%TargetDir%\efi\microsoft\boot\bcd,Echo,"No EFI Boot Configuration Data (BCD), bootia32.efi or bootx64.efi will not be added.",Warn
+Else,Begin
+If,%SourceArch%,Equal,x64,Begin
+Echo,"Copy bootia32.efi..."
+If,ExistFile,#1\bootia32.efi,FileCopy,#1\bootia32.efi,%TargetDir%\efi\boot
+Else,Run,%ScriptFile%,Warn_Message,"#1\bootia32.efi does not exist. It will not be added"
+// optional, copy memtest.efi previously renamed in memtestx64.efi
+If,ExistFile,#1\memtestx86.efi,Begin
+Echo,"Copy memtestx86.efi and Add BCD entry..."
+FileCopy,#1\memtestx86.efi,%TargetDir%\efi\microsoft\boot
+run,%ScriptFile%,AddmemtestBCD
+End
+End
+If,%SourceArch%,Equal,x86,Begin
+Echo,"Copy bootx64.efi..."
+If,ExistFile,#1\bootx64.efi,FileCopy,#1\bootx64.efi,%TargetDir%\efi\boot
+Else,Run,%ScriptFile%,Warn_Message,"#1\bootx64.efi does not exist. It will not be added"
+// optional, copy memtest.efi previously renamed in memtestx64.efi
+If,ExistFile,#1\memtestx64.efi,Begin
+Echo,"Copy memtestx64.efi and Add BCD entry..."
+FileCopy,#1\memtestx64.efi,%TargetDir%\efi\microsoft\boot
+run,%ScriptFile%,AddmemtestBCD
+End
+End
+End
+// Make Image with bootia32.efi and bootx64.efi for ISO creation
+If,ExistFile,%TargetDir%\efi\boot\bootia32.efi,If,ExistFile,%TargetDir%\efi\boot\bootx64.efi,run,%ScriptFile%,Make3264image
+
+[Make3264image]
+// Check/Install IMDISK
+Set,%ImDiskInstalled%,True
+Call,HostSystemDir
+System,FILEREDIRECT,OFF
+If,Not,ExistFile,%HostSystemDir%\imdisk.exe,Set,%ImDiskInstalled%,False
+System,FILEREDIRECT,ON
+If,%ImDiskInstalled%,Equal,False,Begin
+If,Not,ExistFile,%ProjectDir%\Utils\Imdisk_Installer.script,Message,"Imdisk_Installer Plugin required to install ImDisk and create the 32/64 bit efisys.img image!!!",Error
+Else,Begin
+Echo,"Install Imdisk Unattended..."
+If,Not,ExistDir,%ProjectTemp%,DirMake,%ProjectTemp%
+ExtractFile,%ProjectDir%\Utils\Imdisk_Installer.script,files,imdiskinst.exe,%ProjectTemp%
+ShellExecuteDelete,hide,%ProjectTemp%\imdiskinst.exe,-y
+End
+End
+//-
+Echo,"Create the 32/64 bit efisys.img image and replace original efisys*.bin..."
+If,ExistDir,%ProjectTemp%\Make3264img,DirDelete,%ProjectTemp%\Make3264img
+If,ExistDir,%ProjectTemp%\Make3264img,Shellexecute,Hide,cmd.exe,"/C rd /s /q #$q%ProjectTemp%\Make3264img#$q"
+If,ExistDir,%ProjectTemp%\Make3264img,Echo,"%ProjectTemp%\Make3264img folder NOT DELETED!!!",Warn
+If,Not,ExistDir,%ProjectTemp%\Make3264img,DirMake,%ProjectTemp%\Make3264img
+//- Extract Grub2
+ExtractFile,%ScriptFile%,Folder,Make3264img.cmd,%ProjectTemp%\Make3264img
+ShellExecute,Open,%ProjectTemp%\Make3264img\Make3264img.cmd,"#$q%TargetDir%\efi\boot#$q #$q%ProjectTemp%\Make3264img#$q efisys.img",%ProjectTemp%\Make3264img
+If,ExistFile,%ProjectTemp%\Make3264img\efisys.img,Begin
+If,ExistFile,%TargetDir%\efi\microsoft\boot\efisys.bin,Shellexecute,Hide,cmd.exe,"/C del /q /f #$q%TargetDir%\efi\microsoft\boot\efisys.bin#$q"
+If,ExistFile,%TargetDir%\efi\microsoft\boot\efisys.bin,Call,FileDelete,%TargetDir%\efi\microsoft\boot\efisys.bin
+If,ExistFile,%TargetDir%\efi\microsoft\boot\efisys.bin,Call,Echo,"TargetDir\efi\microsoft\boot\efisys.bin NOT DELETED and not replaced!!! ISO will not be compatible 32/64 bit UEFI",Warn
+Else,FileCopy,%ProjectTemp%\Make3264img\efisys.img,%TargetDir%\efi\microsoft\boot\efisys.bin
+//-
+If,ExistFile,%TargetDir%\efi\microsoft\boot\efisys_noprompt.bin,Shellexecute,Hide,cmd.exe,"/C del /q /f #$q%TargetDir%\efi\microsoft\boot\efisys_noprompt.bin#$q"
+If,ExistFile,%TargetDir%\efi\microsoft\boot\efisys_noprompt.bin,Call,FileDelete,%TargetDir%\efi\microsoft\boot\efisys_noprompt.bin
+If,ExistFile,%TargetDir%\efi\microsoft\boot\efisys_noprompt.bin,Call,Echo,"TargetDir\efi\microsoft\boot\efisys_noprompt.bin NOT DELETED and not replaced!!! ISO will not be compatible 32/64 bit UEFI",Warn
+Else,FileCopy,%ProjectTemp%\Make3264img\efisys.img,%TargetDir%\efi\microsoft\boot\efisys_noprompt.bin
+End
+Else,Call,Echo,"32/64 bit efisys.img image NOT CREATED!!! ISO will not be compatible with 32/64 bit UEFI",Warn
+
+[AddmemtestBCD]
+If,%SourceArch%,Equal,x64,Set,%AddmemtestArch%,x86
+Else,Set,%AddmemtestArch%,x64
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /create %MEM_GUID% /d #$qWindows Memory Diagnostic %AddmemtestArch%%AddUEFI%#$q /application osloader",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set %MEM_GUID% device boot",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set %MEM_GUID% path \efi\microsoft\boot\memtest%AddmemtestArch%.efi",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set %MEM_GUID% locale %DistLang%",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set %MEM_GUID% inherit {globalsettings}",%Tools%\%OSArch%\
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /set %MEM_GUID% nointegritychecks Yes",%Tools%\%OSArch%\
+//-
+ShellExecute,Hide,%BcdEditExe%,"/store %BCDefiStore% /toolsdisplayorder {memdiag} %MEM_GUID%",%Tools%\%OSArch%\
+
+[Process_Visible]
+Echo,"Please Wait"
+If,%BcdGrub_ScrollBox%,Equal,WinBCD-Menu,Begin
+Visible,%BcdStdDesc_TextBox%,True,Permanent
+Visible,%Timeout_TextLabel%,True,Permanent
+Visible,%Timeout_NumberBox%,True,Permanent
+Visible,%GrubChoiceNote_TextLabel%,False,Permanent
+End
+Else,Begin
+If,%OS%,Equal,Win7,Message,"Grub4Dos as bootmanager is needed for this function!",Warn
+Else,Message,"Option available only for Windows 7 SP0/SP1!#$xGrub4Dos as bootmanager is needed for this function!",Warn
+Visible,%BcdStdDesc_TextBox%,False,Permanent
+Visible,%Timeout_TextLabel%,False,Permanent
+Visible,%Timeout_NumberBox%,False,Permanent
+Visible,%GrubChoiceNote_TextLabel%,True,Permanent
+End
+
+[EncodedFolders]
+Folder
+
+[Folder]
+hexalter.exe=3545,4727
+Make3264img.cmd=1768,2358
+MultiWim.htm=815,1087
+
+[pButtonHelp2]
+Message,%Help2_1%#$x%Help2_2%#$x#$x%Help2_3%#$x%Help2_4%#$x#$x%Help2_5%
+
+[pButtonHelp3]
+Message,%Help3_1%#$x%Help3_2%#$x%Help3_3%
+
+[pButtonHelp4]
+Message,%Help4_1%#$x%Help4_2%#$x#$x%Help4_3%#$x%Help4_4%#$x#$x%Help4_5%#$x%Help4_6%#$x#$x%Help4_7%#$x#$x%Help4_8%#$x%Help4_9%#$x#$x#$x%Help4_10%#$x%Help4_11%
+
+[ErrorMsg]
+Echo,#1,Warn
+Message,#1,Error
+Exit,#1
+
+[Warn_Message]
+Echo,#1,Warn
+Message,#1,Error
+
+[Warn_Echo]
+Echo,#1,Warn
+Echo,#1,Warn
+Echo,#1,Warn
+Echo,#1,Warn
+
+[Read_ME]
+If,Not,ExistDir,%projecttemp%,DirMake,%projecttemp%
+ExtractFile,%scriptfile%,Folder,MultiWim.htm,%projecttemp%
+System,FILEREDIRECT,OFF
+ShellExecuteex,Hide,cmd.exe,"/C #$q%projecttemp%\MultiWim.htm#$q"
+System,FILEREDIRECT,ON
+
+[OpenSourceFilesDir2]
+If,%pFileBox2%,Equal,"",Exit,"No Directory Specified"
+StrFormat,PATH,%pFileBox2%,%FolderName%
+Call,OpenDir,%FolderName%
+
+[OpenSourceFilesDir3]
+If,%pFileBox3%,Equal,"",Exit,"No Directory Specified"
+StrFormat,PATH,%pFileBox3%,%FolderName%
+Call,OpenDir,%FolderName%
+
+[OpenSourceFilesDir4]
+If,%pFileBox4%,Equal,"",Exit,"No Directory Specified"
+StrFormat,PATH,%pFileBox4%,%FolderName%
+Call,OpenDir,%FolderName%
+
+[OpenSourceFilesDir5]
+If,%pFileBox5%,Equal,"",Exit,"No Directory Specified"
+StrFormat,PATH,%pFileBox5%,%FolderName%
+Call,OpenDir,%FolderName%
+
+[OpenSourceFilesDir6]
+If,%pFileBox6%,Equal,"",Exit,"No Directory Specified"
+StrFormat,PATH,%pFileBox6%,%FolderName%
+Call,OpenDir,%FolderName%
+
+[OpenSourceFilesDir7]
+If,%pFileBox6%,Equal,"",Exit,"No Directory Specified"
+StrFormat,PATH,%pFileBox7%,%FolderName%
+Call,OpenDir,%FolderName%
+
+[InterfaceEncoded]
+Exclamation.bmp=452,603
+DoubleJDesignRavenna3dArrowDown0016016.bmp=622,830
+BokehliciaCaptivaSoftwareupload0016016.bmp=676,902
+AmperossQetto2Move0016016.bmp=893,1191
+
+[EncodedFile-InterfaceEncoded-Exclamation.bmp]
+lines=0
+0=eJxz8hViYgADMyDWAGJOIBYEYkYGCQYYOMwHwTDwHwx+/PixZMmSgoKCtLS0wsLClStXAkX+//v3b/Wpx4FrryusOK8y65hF9dTIiKjo6OhTp079X3f5Dc+JHzyX/sORRfHUmJiYM2fO/O95+R9ZAoicJ2zbuHHj79+//9/98d/g0l+oxPm/hpufPHj0+j8c/P3778G3v7s+/d9y8PT+gwcvX732Hxm8fvX++o1nCSnFYeGx2bnZ34GOhHrgzz/5aeeALuI/8sU/Ki0uPubWrVtQuaPv/iAcktMcExm9adNGqFzLY4Scdv+2qIiozs5OqJz77X9wOfEtj0KjwjMzMz9//vz/3a9/wuf/Ivx38Z9fXG5sbOyVK1f+b3/zG83vtgWdUVFRq1at+l957xeanMaUPVFR0U2NTf/Nrv9DkxM+9C4qIr6vt/+/wml0fTLrH+3Yvufr16//d7z67XjjH/95kG7+078cj77feeoh1AMA+kpMA3ic43etSM5JzE0syczP00vKLWAYBSMKCDFB6FJG7PLT0jXWMDABALBlCE/6kIw0AQAAAAIAAAArAAAAdQEAAAAAAAABAAAAAAAAAAAAAAA
+
+[AuthorEncoded]
+MultiWim.bmp=11859,15812
+Logo=MultiWim.bmp
+
+[EncodedFile-AuthorEncoded-MultiWim.bmp]
+lines=3
+0=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
+1=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
+2=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
+3=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
+
+[EncodedFile-Folder-hexalter.exe]
+lines=1
+0=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
+1=+/19zh9QYZsx/88AQHdnsGIkQqaI1EO9FadzTwF1jAP7LZ25fGL3bAHQTg1mU4UychU+3kQ9smDyFV+H8H6F2eJfwwjL8L/Qj0Y9DHoU9Dn4V+Cfo16HqwZ4Juhr4J+n3Qt0LfDr0Vehf0Puh7oQ9DT3X8Ze0eJOIevyxpuQVwA7fNKztCXdGA9wFPsCvgrYF6Qhyy1GgFgnLv6pq8sjPoYzxd4p5Ob5/sDwXr/QGoM6BvJG53j1fe5fEHPeGeCKkCuM/t9gb7/eFQkJD7Nbgb/3eG+iSAI17ZDQnplgf6GG6AuDu94B2Of0Dc3nA4GMLxj4kb6zXgDfbIPv+X2b+R5ojbH4KYdnLuUDAvNMyhSs3CWp1HLuj6gq67MxCKMBuVuu7uQDTiw/EXdd3gcl8IA7xP141FTrbquiMF3DZd9+6wX2ZyYd0uTyAQ6sTx47q+sD8od+P4SV1fVAbmlC7i7wl6WPU8p4vIYfCWTXj7jf0hsfFhcfvffpHtVZib7X+evivS3xmWC1b+utv/AZEZE6l4nOPJSK1IzClJLdJLrUhlGAUjDshBqD5e7NLrM6ctYGACAG8NB+MoNicQAQAAAAIAAAAnAAAAjg0AAAAAAAABAAAAAAAAAAAAAAA
+
+[EncodedFile-Folder-Make3264img.cmd]
+lines=0
+0=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
+
+[DownloadXXX]
+Call,DownloadXQ
+
+[UploadXXX]
+Call,UploadXMultiQ
+
+[EncodedFile-InterfaceEncoded-DoubleJDesignRavenna3dArrowDown0016016.bmp]
+lines=0
+0=eJzNk09Ik2Ecxw06BF2KqG5ih1EgYZZu7+v7vnu3d++2MpelRFHgQZEaJLVIXSxrW4Wauf7Nwha2rQ7dOgT9IQT1EkQHi+hSHfRSUZrMcp389PjSoUib3vrB9/I8fD78fr+Hxwi0LS+yyi6ySWSVyGqRZUUl1rnr1/3vBfy3+TTxkabuAzx4dp+lsu/G31LRXIrjaCmeVjtfpj4v2jH+YQwpWIYc3orctgUptJkT/UcWxc/1rLXYqYpKqGcklEglcns5DuF48uLhPx2TUxOYIRWlU8PZraOdU1GjMsop4RO9+DucfM1NzuvIfctR3Wai9hq4rvrREybOCy608xpqrAqlQzhObiOSbv2Ln8nPsDvsZ33dSoob1mE7XIIsetAvCUePG63TiRpXUE47rJ0MvRz8wzH9fZqR0SHSj1LUhn2s8a6gMi7hTm7HddmLftHA2aVT2mJjY3Mx7naJ/I/8vHN0Zc5avKNLw+gP4O7bgeuKD73XQyDqI5QM8ur96IJ7jKUiFi8nDDwDezBuCsf1amsnA4Opgm8Y7jtu8UrSj3lnL+btOjypXRg3dpIdThfkjyWCFu9M1eC7tx/vXeFIC8etWjKL4IPdTRZfFqtAvua1PJ5sPWamnuxIpiD/9Plj4ukIh3oaqGk3KG+0sWHfWhp7DvJm7PWS/9FcZmdnF+R+AlbU23p4nNNyyS9Nykn1ckktzkzPC0osS83LSzROcSwqyi93yS/PMzAwNAMivaTcAoZRMPxAGQuEZmPCLu9y8YwcAxMAHjMRfb+2diEBAAAAAgAAAEQAAAAGAgAAAAAAAAEAAAAAAAAAAAAAAA
+
+[EncodedFile-InterfaceEncoded-BokehliciaCaptivaSoftwareupload0016016.bmp]
+lines=0
+0=eJytU21LWmEYbrAfsP0De4H2pRcqRq+0RllUZkav1O+YIH2JPvUhKKJfUE3aaCNQQR3pYWDTPCpBMKUxSczjZDB0Q8UPV/d9L0tdg33YAxfn5nq5n+c85z4vDa8e18l6TnhGeEJ4SnhUpxP+xa1euQD8V5RKJeTzeeRyOWSzWQHXzLH2t1yxWEQikYDb7cXu7iHW1/exuron4Jo51tjD3tqsw3GC+fn36O39hJ6eh8Eae9hb2SMYjGB42Iu+Pv8/gb2cKb+v2fwGAwOBGvhpTzfhg9S1utn8FuW7MplOMDQUwMhIgHrfY3Mzio2Nz1Uce9jLGc5mMhni/WhuPoROt4/6+td3ODpKwGqNV3HsYS9nOBuLfUFLyzG6ulzEnVXB4/kOpzPzB89eznD24iKKxkar9NPrg7fwYG7OBp/vGxRFw+ysDaOjnjudvZzhbDR6iY4OO/V0YHJSxdiYiq2trygUSri+zuLq6ofU29tx0djT2WmTDGdTqbRw3d1O+jYfMTGhYno6TL1zKC+uTaawaDrdHtrajiWjaWn5BgsLfhgMIZoPL6amQlKvrJzT/gUkkwUsL58Lx2hoOJAnZ8rzbLF4YTSG6d18dAY3nfMUg4MK7RmULGu/oUqea4tFqZi/JGZmwnJGgyEg8zU+fip3otcrdJcRusMQ2tt5vl3iVdVU1T9gt6exuMi+exiNZ2htfYempgNBf78LS0sRsPehf1DTfoq2sxPH2tolnTEm4Jo51tLpX1XZG70Y6I54nNNyys9OzcjJTM5MdE4sKMksSwzOTyspTyxKLS3IyU9MMTAwNAMivaTcAoZRMPxAGQuEtmHCLs9kcFmVgQkAJ9URXc7wHxQBAAAAAgAAAEQAAAA8AgAAAAAAAAEAAAAAAAAAAAAAAA
+
+[EncodedFile-Folder-MultiWim.htm]
+lines=0
+0=eJyNVFFr20AMfg/kP4hAtxbqeC0dY63jkqSBBeZ1tIUy6Ms5luNj5zvvTq6Tfz+d7aYJ68Ze4stJ932SPklRQaWKh4PhICpQZHyKSiQBBVEV4K9aPk9Gc6MJNQVfhV7XYo0jWHU3kxHZ0T+fPGyrA3fcUOgZr2BVCOuQJo3UmWlccHb+8aLFIkkK46RWJOFRllHYXbAl7CPkY2qybXeq4ii1fPxhalgJDbVDKP3jSiE0ssylQgdSg9EIy/tbcKhwRZiBeUYLiVxZ40xOwcwYChLUtXceDkSWSZJGAxlY2zq9yIwDR8JSyT7jjrT7nWrAjSiZ8LK7OBvD4zKBAO5J6EzYDHJjoRSrQmoOppFUQGksAhWo4Wydwt00gePFplJ8a09huTiFJJkDv+ZQWtdplhntTjqC8xeCRGpZCtXiJwf4yjSc3iHB7P6VQpuWhT+eiPNlKk90sp/ZF9NAZnz9CBpjf7rrfWuUxlOCXFpHUZjGLHNZSSXaqrEtw67U4I2tnixnm9LO8n5uUVCry/s+BtQiVV4drbYg2qS76vWZsmiOCXoB3unUVVfLHCR7sYcr+OnKVFufuZc/8PozQAks3RrpyZnarvApZbXHbPfyCm3Y20ImLQdx7Nl6PeFoJhzeSHv01PZUwC9OwHKMZSsetOgM4eHOPV4fF0e05Yb0zSgYN8+RHxF05CAsK0VcgNriKQjlzGvMlTVrK0oX5EZlXkHTXjvPKNwuJU8Dh0I45DnL3lLibzr4cfBfoVTfX33HcRlV11Su7+Dgzbpr2OH1HD5WzkWyDLuatKA8651RVG1YHtz/Hw7awVtostuDqXooBDkfWj9kBLbWJLkM237U9yipMS+d0bXL4/Lbp++L8WG7+t8ZOoI7XHNOrh8mMb/50y/ihWYxn4z8WrsMw4cCb59Rj41dh7yycDOuiuo6NYwz+Tz+MIr/zy8KRRyFVby3ubpadpd+y73utrBfzr8BiH3aQ3ic4/EtzSnJDM/M1csoyWUYBSMNLGWF0I+ZsMvv3cZcwcAEAEuMCDt6NQCTAQAAAAIAAAAoAAAA4wIAAAAAAAABAAAAAAAAAAAAAAA
+
+[CompareEditXXX]
+Call,CompareEdit
+
+[EncodedFile-InterfaceEncoded-AmperossQetto2Move0016016.bmp]
+lines=0
+0=eJxtk1lIVFEYxw16agEVzTRncRtt0cx0NCu0QlsgyyCih7Cgh6KFNgQzSsqnFohUEm3FlqmsVGxxxoxSyYkpTcctsiKXtCZ1mPXee878++5o4YMf/DjfnXN+//sdmLt2s3amj7e0RAzhO8kMH7XPv/KfPcF0NXd7RXRg3ufCoDMD+nkFQ8Z5BYOTDBmDCgYNgXlfCudsq4yZzg3I7ToSfMHmVJQBilLi6pT1X097IZdsroBc87GpblB+zwHVNUBJ50JLBAQUSVhQIkJB/X+KBYQWCd4s1XUgKL/3kOz6HTYpQ4scbq9fLsL/ooAV50ahueKE8oYI1TWBoLVcgLKMKJWf6T1XHILv8WaVothyMlwHqG+KmHVJxKHbFnjs49j5zAnf2xyqexLC74hewm6JdE6AmjLDH1BGseVU2E17VeRjIIBmPFhhASQnnneK0Fy2IYaIKHEi9C6DXxmDWscQeY+yKkREPpLfaa+JuO/Wh5C/9bEd4C7INWyxw/bbCmnUiuZeK9bpHDhfY0FkuQvKSo6ohxKiqoCIu+76qEp3XUQtkFDL0DYm2x4863bjdAdwthfY0QKsMYjgYNDTAQVlqJ9yLHwBaB66DdFPhbol9TRLDUPsS4bWMQ+sYw6kVjuwhmbaXzuOvTVWVJtpPkqpbx/DYp0b0a+AmGrBsKhWMMS+AWL1dDcipZGhctiDHSYRbRY3OSIhYdwlYaI4cppdCGsAFr8Q6uNeiU/iacalrxkSyI1ropxGCXEtDGs/cmxq50hrlvCkx+G9W/F3DzQNDLITpxerEhrFE0ntwLK3DInvGLTvGZI/0BytHInka0wce9tpDo+E0gEPwuncUkJ2ljeJuUlGzNcamS3pA8iVkEJO6ieOVR2EmXpaN3Zz7PviQbyJPMrXfgSSjcy+2mQPlv+DaR3CrrSvQGon0caxmry0Lo508tJ7KIf6BLqHvLeyC0j/RpiFnKnfQEa3sDujj1syR4CMn0AmsZ76DSMTvfe3X8C6Pv4n0yzsme4bzO6yB2f1s6NZ/VyX9YPVZU+yhcjqlx5kD9FetyNkqvMXP3mcf3ick3XMLUgtyi8uDkwtKck38s0vSzUwMDQDIr2k3AKGUTDMgRkLhFZixi4vra37hIEJABkJC8Gkai7oAQAAAAIAAAA3AAAAIgMAAAAAAAABAAAAAAAAAAAAAAA
+

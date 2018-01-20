@@ -1,0 +1,107 @@
+[Main]
+Title=Renew USB3
+Type=Plugin
+Author=ChrisR
+Description=Renew USB3.0. Disable/Enable USB 3.0 Root Hub with devcon tool
+Credits=wimb
+Version=005
+Download_Level=2
+Level=6
+Selected=True
+Mandatory=False
+NoWarning=False
+Contact=http://www.msfn.org/board/topic/170546-win81se/page-5#entry1068968
+Date=2017.09.23
+Depend=
+Disable=
+CertifiedBy=
+Certification=
+HistoryNotes01=
+History002=ChrisR - Uses Win8.1 devcon downloaded by GWT
+History003=wimb - Fixed %ProgramEXE%=devcon.exe instead of devcons.exe
+History004=Lancelot - Add_Shortcut fixed - 2015.02.10
+History005=Lancelot Update hiderun lines - Date:2017.09.23
+
+[Variables]
+%ProgramEXE%=devcon.exe
+%ProgramFolder%=
+%ProgramTitle%="Renew USB3"
+%GWTDevconSwitch%=-devcon
+%GWTDevconFolder%=%GlobalTemplates%\GetWaikTools\devcon
+
+[Interface]
+Bevel1=Bevel1,1,12,4,6,177,131
+CheckBox_SMC="Start menu shortcut",1,3,10,11,122,18,True
+TextBox_SMF="Start Menu folder:",1,0,13,49,162,21,"Computer Management\Drivers"
+TextBox_SCN="Shortcut Name:",1,0,13,89,162,21,"Renew USB3"
+CheckBox_Startup="Load at Startup",1,3,10,115,122,18,True
+pTextLabel1="Renew USB3 uses devcon.exe tool downloaded by GetWaikTool",1,1,4,150,320,18,8,Normal
+pWebLabel1="Windows Device Console (Devcon.exe)",1,10,4,164,221,18,http://msdn.microsoft.com/en-us/library/windows/hardware/ff544707(v=vs.85).aspx
+
+[Process]
+Echo,"Processing %ScriptTitle% ..."
+//-
+If,Not,ExistFile,%Target_Sys%\devcon.exe,Begin
+If,ExistFile,%Tools%\%SourceArch%\devcon.exe,FileCopy,%Tools%\%SourceArch%\devcon.exe,%Target_Sys%\devcon.exe
+End
+If,Not,ExistFile,%Target_Sys%\devcon.exe,Begin
+Run,%scriptfile%,GetDevcon
+If,ExistFile,%Tools%\%SourceArch%\devcon.exe,FileCopy,%Tools%\%SourceArch%\devcon.exe,%Target_Sys%\devcon.exe
+End
+If,Not,ExistFile,%Target_Sys%\devcon.exe,Exit,"devcon Tools is required for %ProgramTitle% !!!#$x#$xExiting..."
+//-
+If,%TextBox_SMF%-,Equal,-,Set,%TextBox_SMF%,"Computer Management\Drivers"
+If,%TextBox_SCN%-,Equal,-,Set,%TextBox_SCN%,"Renew USB3"
+//-
+Run,%ScriptFile%,RenewUSB3cmd
+If,%CheckBox_SMC%,Equal,True,Add_Shortcut,StartMenu,%TextBox_SMF%,#$pSystemRoot#$p\system32\RenewUSB3.cmd,%TextBox_SCN%,,,#$pSystemRoot#$p\system32\shell32.dll#$c-27
+If,%CheckBox_Startup%,Equal,True,Begin
+If,Not,ExistFile,%Target_Sys%\HideRun.exe,Require,File,HideRun.exe
+Add_Shortcut,AutoRun,,#$pSystemRoot#$p\system32\hiderun.exe,%ProgramTitle%,#$q#$pSystemRoot#$p\system32#$q,"/w #$q#$pSystemRoot#$p\system32\RenewUSB3.cmd#$q"
+End
+
+[GetDevcon]
+Run,%ScriptFile%,Checkdevcon
+If,Not,-%WDKdevcon%,Equal,-,Run,%scriptfile%,CopyDevcon
+Run,%scriptfile%,Checkdevcon
+//- Download with GetWaikTools
+If,Not,-%WDKdevcon%,Equal,-,Begin
+If,Not,ExistFile,%ProjectDir%\Utils\GetWaikTools.script,Begin
+Message,"GetWaikTools script required to download devcon Tools !!!#$x#$xExiting...",Error
+Halt,"GetWaikTools script required to download devcon Tools. Exiting..."
+End
+Echo,"Download %WDKdevcon% tools ..."
+Run,%ProjectDir%\Utils\GetWaikTools.script,Launch_Program,%ProjectDir%\Utils\GetWaikTools.script,"%WDKdevcon% -Silent"
+Run,%scriptfile%,CopyDevcon
+End
+
+[Checkdevcon]
+Set,%WDKdevcon%,
+If,Not,ExistFile,%Tools%\x86\devcon.exe,Set,%WDKdevcon%,%GWTDevconSwitch%
+If,Not,ExistFile,%Tools%\x64\devcon.exe,Set,%WDKdevcon%,%GWTDevconSwitch%
+
+[CopyDevcon]
+If,Not,ExistFile,%Tools%\x86\devcon.exe,Begin
+If,ExistFile,%GWTDevconFolder%\x86\devcon.exe,FileCopy,%GWTDevconFolder%\x86\devcon.exe,%Tools%\x86\devcon.exe
+End
+If,Not,ExistFile,%Tools%\x64\devcon.exe,Begin
+If,ExistFile,%GWTDevconFolder%\amd64\devcon.exe,FileCopy,%GWTDevconFolder%\amd64\devcon.exe,%Tools%\x64\devcon.exe
+End
+
+[RenewUSB3cmd]
+Set,%w%,%Target_Sys%\RenewUSB3.cmd
+Call,FileDelete,%w%
+FileCreateBlank,%w%
+TxtAddLine,%w%,"%ProgramEXE% disable USB\ROOT_HUB30",Append
+TxtAddLine,%w%,"%ProgramEXE% enable USB\ROOT_HUB30",Append
+TxtAddLine,%w%,exit,Append
+
+[AuthorEncoded]
+Usb3.0.jpg=4267,5690
+Logo=Usb3.0.jpg
+
+[EncodedFile-AuthorEncoded-Usb3.0.jpg]
+lines=1
+0=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
+1=XNptrE55wGLb8BLwtsUj22xIylN3rbzlAESCVB22ugKIdxgTOv1ms6dsvQ7en4BlkxIZ69dqvmDUEcDE9qKpjdVW4cN4xCQio2kfZEy9NTc+5mNW4pMl552TYyjzMSiVhHIHhD0YUXEx4PGA2F4s63rJw11Dqc4Dp1ya86gMmfMpiudT3tUyN7L+d8/VygjZOrCpM02aMNmvgybBQ0TF5dVdXJZK/oqZjy7z22t4USW30RYa41slQdK1mqAbuIMYaz/dzR2cdCjHxdFR/qkilbj+jhkST2UA56MECQHAMiPKcp72i7Od2zsddzkjWDTZRZpW3JbemrG3ZB1RWj/BvZucY3yH2ekB5aXMlmcOgpRFVnLlkRugCNr3u1FISACp11S10mZGT+bVL9L8/oZQ7FIgCnLs3cNm9Q6T/RELN1dlYE9IWRIt7drMSkzJn0dKUbSKIvQcm82fc8f4en1C8U5d96pX96/ItgJS/XD82GQ0b03u5GOfdnoGlvXpQLqP5c/mNP1gI5I77tB9dCl72e4aRoPfL1voW3r0Yi9xi2ZteUSApsRUCgVex6xoT7FV2rJAzuOZW6NtX0FbX5lje/tS1cC/27nFytcWNt8/j0+FxyqWBCECYORT/iGFqyx+wTWmaDkskaznbO+PJM31s4y3tNf4T7dqKg/kcTZabh272OB3ng4r7XA58roa1+8X+h2BEegn9mq91ODjT3V9fWB53TaWa/JFgOeBc7Twvim/BEDaio5o8yq7Qv9Dkccf800t51ecajZby1O6n7U867qpRd2i5enkxxBS+Vt1VWWuaCkktoCzhHGNUfGE0vdNEb+5x+e+3dDPDTxbixN3FNXD4W9EvtsfiDRV6VeIhX7+qhcxGKEJMVbOpBs+Qj5K/jR64MLXpAYaYZkRYUeBCW1Zb3YClEc3KjFGlv6vOsPHAK6eE8gNKdIsg8hogc7hy7SXO0o8G85uchLphAQKo2372YRwmkdztdvfXtmezdwLrgpDPVRP8hhSs+QW6LHeWZn1GKL/VL2UdWkASPgORTqT/4J1rYfxu7e6LZOvs6PSZj6+W1ce87kzqyke2Hkh3F1/VGsyCRIF5mKZkppLEOHwUNx9bgNFjhk0yh7PjHzok//zSqLXFnCnUgtCOzdUmvrdBAe9hvbG3tS4X32L2Z+aWS9jiN6Jf4GAtPwcjSk2MHgec7T8W/OAJW74UbShjJcKmqfh8FF0WADg2xlb0oAurUPFk0KxFwW0E8a9gl0jJS+UtxW5WTcePwK/THXCL9zwkmc/LRSOv2TzvFH2OOhML5j4jX+nMbIQXrjkHdQeHpDm28bYr/OmGWArdL0Wgkiuurvv1IY0f2VtV1Z/qz5D2e3RCm7i1WPvYotjiwmKLBkPMIOt365MieIPzqqekTY41UuY5Ql7XIL3lH9pTq5vePhR6i+KSJgA/1vSLgraW+CPDCka2G5j87RyD4GqkiYPKxzaa9eLFW9dfZonf/AfDnmuB4nOMKLU4y1jPQyypIZxgFIw8UC0LoRAHs8geqeh8zMAEA/vMG1nZdfE0BAAAAAgAAACYAAABhEAAAAAAAAAEAAAAAAAAAAAAAAA
+

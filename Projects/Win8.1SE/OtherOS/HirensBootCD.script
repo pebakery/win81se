@@ -1,0 +1,318 @@
+[main]
+Title=Hirens Boot CD (for v 15.2 and possibly later)
+Type=Plugin
+Author=sbaeder,ChrisR
+Description=Adds Hiren's Boot CD to the PE. Can provide access to *just* the windows tools -OR- also add the DOS and other stand-alone tools to the 'Other OS' Menu.  Since version 14, Hirens includes Parted Magic as it's Linux Recovery option.  It is listed as a separate option since  it may be added here or by it's own 'Other OS' Plugin.
+Credits=sbaeder,ChrisR
+Version=015
+Download_Level=2
+Level=7
+Selected=False
+Mandatory=False
+NoWarning=False
+Contact=http://www.hiren.info/pages/bootcd
+Date=2017.02.01
+Depend=
+Disable=
+Web1=http://w7pese.cwcodes.net/Projects/Win7PESE/OtherOS/HirensBootCD.script
+Web2=http://yomi.cwcodes.net/Yomi/OtherOSY/HirensBootCD.script
+Web3=http://w8pese.cwcodes.net/Projects/Win8PESE/OtherOS/HirensBootCD.script
+Web4=http://win81se.cwcodes.net/Projects/Win8.1SE/OtherOS/HirensBootCD.script
+CertifiedBy=
+Certification=
+HistoryNotes01=Since some tools are deleted, some options of the Hirens menu (Grub4Dos - IsoLinux) do not works.
+History002=sbaeder - Modified for version 14 of HBCD to allow separate copy of things like dos tools and parted magic.
+History003=ChrisR-sbaeder - Choose between Download Hiren's Boot CD or point to an ISO image (to use KeyboardPatch for example).
+History003=also cleanups on selection of windos, dos, pmagic and other tools
+History004=Lancelot SetOtherOS support added
+History005=ChrisR - Plugin compatible with the version 14.1
+Hiztory006=sbaeder - Improvements for use when no other boot manager - just a way to get a lot of programs!
+History007=ChrisR - Plugin updated for version 15.1
+History009=ChrisR - messages reviewed and minor things
+History010=ChrisR - Plugin updated for version 15.2
+History011=Lancelot - Added DU buttons
+History014=Lancelot - syntax updated x 2 - Date=2016.01.27
+History015=Lancelot - Add Compare button - Date:2017.02.01
+
+[Interface]
+Silently_CheckBox="Run silently",1,3,466,6,83,18,True
+Download_TextLabel="Download and use Hiren's Boot CD (US keyboard).",1,1,109,33,250,18,8,Normal
+ChooseLocation_RadioGroup=,1,14,6,27,421,118,Download,"Local ISO File",0
+DownloadURL_TextBox=,1,0,109,51,309,21,http://www.hirensbootcd.org/files/Hirens.BootCD.15.2.zip
+Download_Button="Download/Extract ISO  Now",1,8,431,36,143,26,Download,0,False,_Download_,False
+pAlwaysUpdate="Always Update",1,3,433,65,101,18,False
+DestDownload_TextLabel="Destination:  %GlobalTemplates%\Hirens",1,1,110,71,210,18,8,Normal
+IsoImage_TextLabel="Or point to an ISO image (you can use KeyboardPatch).",1,1,109,90,291,18,8,Normal
+IsoImage_FileBox=%GlobalTemplates%\Hirens\Hiren's.BootCD.15.2.iso,1,13,104,105,317,30,file
+OpenFolder_Button="Open Folder",1,8,431,103,145,25,OpenFolder,True,True,True,_OpenFolder_,True,"__Open your folder."
+WinTools_TextLabel="Windows Tools",1,1,59,158,92,18,8,Bold
+StartMenu_CheckBox="Create Startmenu Shortcut",1,3,16,184,185,18,True
+StartMenuFolder_TextBox="Start menu folder",1,0,31,222,168,21,Hirens
+StartMenuName_TextBox="Name for Shortcuts:",1,0,31,265,168,21,"Hirens Windows Tools"
+Desktop_CheckBox="Create Desktop Shortcut",1,3,17,293,177,18,True
+StartMenu_Bevel=pBevel1,1,12,7,178,208,140
+BootTools_TextLabel="Bootable Tools",1,1,380,158,90,18,8,Bold
+DosTools_CheckBox="Basic Dos Tools...",1,3,317,220,129,18,True
+DosTools_TextLabel="These control adding Hirens CD content to the 'Other OS' Boot Menu.",1,1,315,184,216,38,8,Bold
+MiscTools_CheckBox="Other Misc Tools...Memtest, chntpw, dban, plpbt, ntldr, etc.",1,3,344,244,190,38,True
+PMagic_CheckBox="Parted Magic",1,3,345,290,95,18,False
+BootMenu_Bevel=pBevel2,1,12,306,178,238,140
+Note_TextLabel="Note: If tools are omitted from the build, some of the Grub4Dos or IsoLinux menu selections may not function properly !",1,1,83,332,384,40,8,Bold
+Note_Bevel=pBevel3,1,12,70,329,402,44
+pImage1=none,1,5,223,202,73,75,
+WebLabel_Homepg="Hiren's Boot CD Home Page",1,10,190,158,131,18,http://www.hiren.info/pages/bootcd
+WebLabel_Plugin="Plugin Page",1,10,320,4,55,18,http://TheOven.org/index.php?board=9
+Button_Download=,1,8,382,-1,24,24,DownloadXXX,DoubleJDesignRavenna3dArrowDown0016016.bmp,False,False,_DownloadXXX_,False,"__DOWNLOAD Plugin"
+Button_Upload=,1,8,403,-1,24,24,UploadXXX,BokehliciaCaptivaSoftwareupload0016016.bmp,False,False,_UploadXXX_,False,"__UPLOAD Plugin (Admins Only)"
+Button_CompareEdit=,1,8,426,-1,24,24,CompareEditXXX,AmperossQetto2Move0016016.bmp,False,False,_CompareEditXXX_,False,"__DOWNLOAD and Compare with an Editor"
+
+[Variables]
+%FolderName%=Hirens
+%MenuTitle%="Hiren's Boot CD"
+%HBCDTempFolder%=%ProjectTemp%\%FolderName%
+%ShowHide%=Open
+
+[Process]
+If,Not,ExistVar,%BootSector%,If,ExistSection,%projectdir%\script.project,SetOtherOS,Run,%projectdir%\script.project,SetOtherOS
+// If not the right boot manager, no point in going forward
+If,%BootSector%,Equal,BCDW,Run,%scriptfile%,Warn_Echo,"'%ScriptTitle%' not prepared for %BootSector%"
+If,%BootSector%,Equal,BCDW,Exit,"'%ScriptTitle%' not prepared for %BootSector%"
+//
+//BUG in WB80 - access violation on reset checkbox, so copy to local variables...
+Set,%Local_DosTools_CheckBox%,%DosTools_CheckBox%
+Set,%Local_MiscTools_CheckBox%,%MiscTools_CheckBox%
+Set,%Local_PMagic_CheckBox%,%PMagic_CheckBox%
+// Keep the Dos tools?? - Warn if they unselect them, and also use this to drive ANY menu at all
+If,%Local_DosTools_CheckBox%,Equal,False,Begin
+If,%Local_MiscTools_CheckBox%,Equal,True,Begin
+Beep,ASTERISK
+If,QUESTION,"Can't enable Hiren's stand-alone tools without also selecting the DOS tools. Enable DOS tool and continue? (Y)",10,True,Set,%Local_DosTools_CheckBox%,True
+Else,Exit,"User Abort"
+End
+End
+If,%Local_DosTools_CheckBox%,Equal,False,Begin
+If,%Local_PMagic_CheckBox%,Equal,True,Begin
+Beep,ASTERISK
+If,QUESTION,"Can't enable Hiren's stand-alone Parted Magic without also selecting the DOS tools. Enable DOS tool and continue (Y)",10,True,Set,%Local_DosTools_CheckBox%,True
+Else,Exit,"User Abort"
+End
+End
+If,%Silently_CheckBox%,Equal,True,Set,%ShowHide%,Hide
+Else,Set,%ShowHide%,Open
+// Run this all from the CD...Hirens extracts all the windows programs to memory...
+RunFrom,CD
+If,%CDDrive%,Equal,"X:",Begin
+Run,%scriptfile%,ErrorMsg,"Hirens Can't run from a bootable WIM"
+End
+//
+// If we need to, go download/extract the iso from the zip file
+If,%ChooseLocation_RadioGroup%,Equal,0,Begin
+If,%pAlwaysUpdate%,Equal,True,Run,%ScriptFile%,Download
+Else,If,Not,ExistFile,%GlobalTemplates%\%FolderName%\*.iso,Run,%ScriptFile%,Download
+If,Not,Existfile,%GlobalTemplates%\%FolderName%\*.iso,Run,%scriptfile%,ErrorMsg,"'%MenuTitle%' iso not found in %GlobalTemplates%\%FolderName%. Check Source location for proper ZIP file"
+End
+If,%ChooseLocation_RadioGroup%,Equal,1,Begin
+If,Not,Existfile,%IsoImage_FileBox%,Run,%scriptfile%,ErrorMsg,"Could not find %IsoImage_FileBox%. Please check specified location."
+End
+//
+// Extract the ISO, and get ready to move selected areas to the target area. Start with a clean temp area...
+If,ExistDir,%HBCDTempFolder%,DirDelete,%HBCDTempFolder%
+DirMake,%HBCDTempFolder%
+Echo,"Extracting iso file..."
+If,%ChooseLocation_RadioGroup%,Equal,0,ShellExecute,%ShowHide%,%Tools%\7z.exe,"x -y #$q%GlobalTemplates%\%FolderName%\*.iso#$q -o#$q%HBCDTempFolder%#$q"
+If,%ChooseLocation_RadioGroup%,Equal,1,ShellExecute,%ShowHide%,%Tools%\7z.exe,"x -y #$q%IsoImage_FileBox%#$q -o#$q%HBCDTempFolder%#$q"
+//
+// Based on Selections, remove the parts we don't want here...
+Echo,"Cleaning up temp area (%HBCDTempFolder%\HBCD)"
+//
+// Since the XP and min98 is "warez", and this is building a PE, we can just remove it
+If,ExistDir,%HBCDTempFolder%\HBCD\XP,Call,DirDelete,%HBCDTempFolder%\HBCD\XP
+// Mini98.uha deleted since version 14
+//If,ExistFile,%HBCDTempFolder%\HBCD\DOS\Mini98.uha,FileDelete,%HBCDTempFolder%\HBCD\DOS\Mini98.uha
+//
+// Keep the Dos tools?? - Warn if they unselect them, and also use this to drive ANY menu at all
+If,%Local_DosTools_CheckBox%,Equal,False,Begin
+Call,DirDelete,%HBCDTempFolder%\HBCD\DOS
+Set,%Local_MiscTools_CheckBox%,False
+Set,%Local_PMagic_CheckBox%,False
+End
+// Remove the "Other Tools"
+If,%Local_MiscTools_CheckBox%,Equal,False,Begin
+FileDelete,%HBCDTempFolder%\HBCD\Boot\*.gz,NOWARN
+FileDelete,%HBCDTempFolder%\HBCD\Boot\chntpw,NOWARN
+FileDelete,%HBCDTempFolder%\HBCD\Boot\SeagatDW,NOWARN
+FileDelete,%HBCDTempFolder%\HBCD\Boot\plpbt.bin,NOWARN
+End
+// Remove "Parted Magic"
+If,%Local_PMagic_CheckBox%,Equal,False,Call,DirDelete,%HBCDTempFolder%\HBCD\Boot\pmagic
+//
+If,%StartMenu_CheckBox%,Equal,False,Begin
+If,%Desktop_CheckBox%,Equal,False,Begin
+Beep,ASTERISK
+If,QUESTION,"No start menu or desktop shortcut enabled. Delete Windows tools? (N)",10,False,Call,DirDelete,%HBCDTempFolder%\HBCD\Programs
+Else,Message,"Warning - No shortcuts created means you have to launch programs manually",Warning,5
+End
+end
+// Move whats left in HBCD and cleanup temp folder
+If,ExistDir,%TargetDir%\HBCD\,Call,DirDelete,%TargetDir%\HBCD
+DirMove,%HBCDTempFolder%\HBCD,%TargetDir%
+Call,DirDelete,%HBCDTempFolder%
+//
+echo,"Processing %MenuTitle% ... Add Shorcuts and Boot Menus"
+If,%StartMenu_CheckBox%,Equal,True,Add_Shortcut,StartMenu,%StartMenuFolder_TextBox%,%CDDrive%\HBCD\HBCDMenu.exe,%StartMenuName_TextBox%
+If,%Desktop_CheckBox%,Equal,True,Add_Shortcut,Desktop,,%CDDrive%\HBCD\HBCDMenu.exe,%StartMenuName_TextBox%
+// Now add info to the other OS menu
+If,%Local_DosTools_CheckBox%,Equal,True,Begin
+If,%Local_MiscTools_CheckBox%,Equal,True,Run,%scriptfile%,Process_%BootSector%_Full
+Else,Run,%scriptfile%,Process_%BootSector%_Min
+End
+// FIX error in Hiren 14 on dos boot... now fix in Hiren 14.1 - 15.1   -15.2
+//TXTReplace,%TargetDir%\HBCD\isolinux.cfg,Dos/boot.gz,Dos/dos.gz
+
+[Download]
+If,%BootSector%,Equal,BCDW,Message,"NO BCDW Entry for '%MenuTitle%' at this time, so no point in downloading files",ERROR,10
+If,%BootSector%,Equal,BCDW,Exit,"NO BCDW Entry for '%MenuTitle%' at this time - Skipping Download"
+// Clean out template area
+If,ExistDir,%GlobalTemplates%\%FolderName%,DirDelete,%GlobalTemplates%\%FolderName%
+DirMake,%GlobalTemplates%\%FolderName%
+StrFormat,FILENAME,%DownloadURL_TextBox%,%DownloadName%
+Echo,"Downloading %DownloadName%..."
+ShellExecute,%ShowHide%,%Tools%\wget.exe,"-O #$q%GlobalTemplates%\%FolderName%\%DownloadName%#$q %DownloadURL_TextBox%"
+//Double check to make sure we got the "zip" file
+If,Not,Existfile,%GlobalTemplates%\%FolderName%\%DownloadName%,Run,%scriptfile%,ErrorMsg,"Could not download %DownloadName%. Please check URLS maybe a new version is out and the URLs changed."
+// Extract ZIP to get the ISO, and clean up
+Echo,"Extracting %DownloadName%..."
+ShellExecute,%ShowHide%,%Tools%\7z.exe,"x -y  #$q%GlobalTemplates%\%FolderName%\%DownloadName%#$q -o#$q%GlobalTemplates%\%FolderName%\"
+FileDelete,%GlobalTemplates%\%FolderName%\%DownloadName%
+
+[Process_Grub4Dos_Min]
+Echo,"Processing Grub4Dos boot manager..."
+TXTAddLine,%BootMenu%,"title %MenuTitle% Dos Programs",Append
+TXTAddLine,%BootMenu%,"set dos=/HBCD/Dos/dos.gz",Append
+TXTAddLine,%BootMenu%,"find --set-root /HBCD/Boot/dos.img && set dos=/HBCD/Boot/dos.img",Append
+TXTAddLine,%BootMenu%,"# to make big floppy image of all the dos programs (Useful when booted from NTFS usb drive) open HBCD\DOS\dosimg.cmd",Append
+TXTAddLine,%BootMenu%,"find --set-root #$pdos#$p",Append
+TXTAddLine,%BootMenu%,"map --mem #$pdos#$p (fd0)",Append
+TXTAddLine,%BootMenu%,"map --hook",Append
+TXTAddLine,%BootMenu%,"chainloader (fd0)+1",Append
+TXTAddLine,%BootMenu%,"rootnoverify (fd0)",Append
+TXTAddLine,%BootMenu%,"map --floppies=1",Append
+TXTAddLine,%BootMenu%,"",Append
+//- Old chain starting
+//TXTAddLine,%BootMenu%,"title %MenuTitle% Dos Programs",Append
+//TXTAddLine,%BootMenu%,"find --set-root /HBCD/Dos/dos.gz",Append
+//TXTAddLine,%BootMenu%,"kernel /HBCD/Boot/memdisk",Append
+//TXTAddLine,%BootMenu%,"initrd /HBCD/Dos/dos.gz",Append
+//TXTAddLine,%BootMenu%,"",Append
+
+[Process_IsoLinux_Min]
+Echo,"Processing IsoLinux boot manager..."
+TXTAddLine,%BootMenu%,"LABEL %MenuTitle%",Append
+TXTAddLine,%BootMenu%,"MENU LABEL ^%MenuTitle% Dos Programs",Append
+TXTAddLine,%BootMenu%,"LINUX /HBCD/Boot/memdisk",Append
+TXTAddLine,%BootMenu%,"INITRD /HBCD/Dos/dos.gz",Append
+TXTAddLine,%BootMenu%,"APPEND floppy",Append
+TXTAddLine,%BootMenu%,"",Append
+//- Old chain starting
+//TXTAddLine,%BootMenu%,"LABEL %MenuTitle%",Append
+//TXTAddLine,%BootMenu%,"MENU LABEL ^%MenuTitle% Dos Programs",Append
+//TXTAddLine,%BootMenu%,"  KERNEL /HBCD/Boot/memdisk",Append
+//TXTAddLine,%BootMenu%,"  APPEND initrd=/HBCD/Dos/dos.gz",Append
+//TXTAddLine,%BootMenu%,"",Append
+
+[Process_BCDW_Min]
+Message,"NO BCDW Entry for this at this time",ERROR,5
+
+[Process_etfsboot.com_Min]
+// this means no real boot manager - just loading the programs - so DOS programs not really useful!
+Run,%scriptfile%,Warn_Echo,"No boot menu option. '%MenuTitle%' is just usable in PE"
+
+[Process_Grub4Dos_Full]
+Echo,"Processing Grub4Dos boot manager..."
+TXTAddLine,%BootMenu%,"title %MenuTitle%",Append
+TXTAddLine,%BootMenu%,"find --set-root /HBCD/menu.lst",Append
+TXTAddLine,%BootMenu%,"configfile /HBCD/menu.lst",Append
+TXTAddLine,%BootMenu%,"",Append
+//
+TXTAddLine,%TargetDir%\HBCD\menu.lst,"",Append
+TXTAddLine,%TargetDir%\HBCD\menu.lst,"title ...Back to Main Menu\n",Append
+TXTAddLine,%TargetDir%\HBCD\menu.lst,"find --set-root /menu.lst",Append
+TXTAddLine,%TargetDir%\HBCD\menu.lst,"configfile /menu.lst",Append
+TXTAddLine,%TargetDir%\HBCD\menu.lst,"lock",Append
+TXTAddLine,%TargetDir%\HBCD\menu.lst,"",Append
+
+[Process_IsoLinux_Full]
+Echo,"Processing IsoLinux boot manager..."
+TXTAddLine,%BootMenu%,"LABEL %MenuTitle%",Append
+TXTAddLine,%BootMenu%,"MENU LABEL ^%MenuTitle%",Append
+TXTAddLine,%BootMenu%,"  COM32 /isolinux/VESAMENU.c32",Append
+TXTAddLine,%BootMenu%,"  APPEND /HBCD/isolinux.cfg",Append
+TXTAddLine,%BootMenu%,"",Append
+//
+TXTAddLine,%TargetDir%\HBCD\isolinux.cfg,"",Append
+TXTAddLine,%TargetDir%\HBCD\isolinux.cfg,"Label main",Append
+TXTAddLine,%TargetDir%\HBCD\isolinux.cfg,"menu label ...Back to Main Menu",Append
+If,%BootSkin%,Equal,Text,TXTAddLine,%TargetDir%\HBCD\isolinux.cfg,"COM32 /isolinux/menu.c32",Append
+If,Not,%BootSkin%,Equal,Text,TXTAddLine,%TargetDir%\HBCD\isolinux.cfg,"COM32 /isolinux/vesamenu.c32",Append
+TXTAddLine,%TargetDir%\HBCD\isolinux.cfg,"APPEND /isolinux/isolinux.cfg",Append
+TXTAddLine,%TargetDir%\HBCD\isolinux.cfg,"",Append
+
+[Process_BCDW_Full]
+Message,"NO BCDW Entry for this at this time",ERROR,5
+
+[Process_etfsboot.com_Full]
+// this means no real boot manager - just loading the programs - so DOS programs not really useful!
+Run,%scriptfile%,Warn_Echo,"No boot menu option. '%MenuTitle%' is just usable in PE"
+
+[ErrorMsg]
+Echo,#1,Warn
+Message,#1,Error
+Exit,#1
+
+[Warn_Echo]
+Echo,#1,Warn
+Echo,#1,Warn
+Echo,#1,Warn
+Echo,#1,Warn
+
+[OpenFolder]
+StrFormat,PATH,%IsoImage_FileBox%,%OpenFolder%
+If,Not,ExistDir,%OpenFolder%,DirMake,%OpenFolder%
+If,Not,ExistDir,%OpenFolder%,Message,"No folder around!"
+Call,OpenDir,%OpenFolder%
+
+[AuthorEncoded]
+hirensbootcd.jpg=3135,4180
+Logo=hirensbootcd.jpg
+
+[EncodedFile-AuthorEncoded-hirensbootcd.jpg]
+lines=1
+0=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
+1=9JTtHLKkhnGAUjCezkgdDvubHLe/zLkGVgAgAN2AoQc9FLYwEAAAACAAAALAAAAO8LAAAAAAAAAQAAAAAAAAAAAAAA
+
+[DownloadXXX]
+Call,DownloadXQ
+
+[UploadXXX]
+Call,UploadXMultiQ
+
+[InterfaceEncoded]
+DoubleJDesignRavenna3dArrowDown0016016.bmp=622,830
+BokehliciaCaptivaSoftwareupload0016016.bmp=676,902
+AmperossQetto2Move0016016.bmp=893,1191
+
+[EncodedFile-InterfaceEncoded-DoubleJDesignRavenna3dArrowDown0016016.bmp]
+lines=0
+0=eJzNk09Ik2Ecxw06BF2KqG5ih1EgYZZu7+v7vnu3d++2MpelRFHgQZEaJLVIXSxrW4Wauf7Nwha2rQ7dOgT9IQT1EkQHi+hSHfRSUZrMcp389PjSoUib3vrB9/I8fD78fr+Hxwi0LS+yyi6ySWSVyGqRZUUl1rnr1/3vBfy3+TTxkabuAzx4dp+lsu/G31LRXIrjaCmeVjtfpj4v2jH+YQwpWIYc3orctgUptJkT/UcWxc/1rLXYqYpKqGcklEglcns5DuF48uLhPx2TUxOYIRWlU8PZraOdU1GjMsop4RO9+DucfM1NzuvIfctR3Wai9hq4rvrREybOCy608xpqrAqlQzhObiOSbv2Ln8nPsDvsZ33dSoob1mE7XIIsetAvCUePG63TiRpXUE47rJ0MvRz8wzH9fZqR0SHSj1LUhn2s8a6gMi7hTm7HddmLftHA2aVT2mJjY3Mx7naJ/I/8vHN0Zc5avKNLw+gP4O7bgeuKD73XQyDqI5QM8ur96IJ7jKUiFi8nDDwDezBuCsf1amsnA4Opgm8Y7jtu8UrSj3lnL+btOjypXRg3dpIdThfkjyWCFu9M1eC7tx/vXeFIC8etWjKL4IPdTRZfFqtAvua1PJ5sPWamnuxIpiD/9Plj4ukIh3oaqGk3KG+0sWHfWhp7DvJm7PWS/9FcZmdnF+R+AlbU23p4nNNyyS9Nykn1ckktzkzPC0osS83LSzROcSwqyi93yS/PMzAwNAMivaTcAoZRMPxAGQuEZmPCLu9y8YwcAxMAHjMRfb+2diEBAAAAAgAAAEQAAAAGAgAAAAAAAAEAAAAAAAAAAAAAAA
+
+[EncodedFile-InterfaceEncoded-BokehliciaCaptivaSoftwareupload0016016.bmp]
+lines=0
+0=eJytU21LWmEYbrAfsP0De4H2pRcqRq+0RllUZkav1O+YIH2JPvUhKKJfUE3aaCNQQR3pYWDTPCpBMKUxSczjZDB0Q8UPV/d9L0tdg33YAxfn5nq5n+c85z4vDa8e18l6TnhGeEJ4SnhUpxP+xa1euQD8V5RKJeTzeeRyOWSzWQHXzLH2t1yxWEQikYDb7cXu7iHW1/exuron4Jo51tjD3tqsw3GC+fn36O39hJ6eh8Eae9hb2SMYjGB42Iu+Pv8/gb2cKb+v2fwGAwOBGvhpTzfhg9S1utn8FuW7MplOMDQUwMhIgHrfY3Mzio2Nz1Uce9jLGc5mMhni/WhuPoROt4/6+td3ODpKwGqNV3HsYS9nOBuLfUFLyzG6ulzEnVXB4/kOpzPzB89eznD24iKKxkar9NPrg7fwYG7OBp/vGxRFw+ysDaOjnjudvZzhbDR6iY4OO/V0YHJSxdiYiq2trygUSri+zuLq6ofU29tx0djT2WmTDGdTqbRw3d1O+jYfMTGhYno6TL1zKC+uTaawaDrdHtrajiWjaWn5BgsLfhgMIZoPL6amQlKvrJzT/gUkkwUsL58Lx2hoOJAnZ8rzbLF4YTSG6d18dAY3nfMUg4MK7RmULGu/oUqea4tFqZi/JGZmwnJGgyEg8zU+fip3otcrdJcRusMQ2tt5vl3iVdVU1T9gt6exuMi+exiNZ2htfYempgNBf78LS0sRsPehf1DTfoq2sxPH2tolnTEm4Jo51tLpX1XZG70Y6I54nNNyys9OzcjJTM5MdE4sKMksSwzOTyspTyxKLS3IyU9MMTAwNAMivaTcAoZRMPxAGQuEtmHCLs9kcFmVgQkAJ9URXc7wHxQBAAAAAgAAAEQAAAA8AgAAAAAAAAEAAAAAAAAAAAAAAA
+
+[CompareEditXXX]
+Call,CompareEdit
+
+[EncodedFile-InterfaceEncoded-AmperossQetto2Move0016016.bmp]
+lines=0
+0=eJxtk1lIVFEYxw16agEVzTRncRtt0cx0NCu0QlsgyyCih7Cgh6KFNgQzSsqnFohUEm3FlqmsVGxxxoxSyYkpTcctsiKXtCZ1mPXee878++5o4YMf/DjfnXN+//sdmLt2s3amj7e0RAzhO8kMH7XPv/KfPcF0NXd7RXRg3ufCoDMD+nkFQ8Z5BYOTDBmDCgYNgXlfCudsq4yZzg3I7ToSfMHmVJQBilLi6pT1X097IZdsroBc87GpblB+zwHVNUBJ50JLBAQUSVhQIkJB/X+KBYQWCd4s1XUgKL/3kOz6HTYpQ4scbq9fLsL/ooAV50ahueKE8oYI1TWBoLVcgLKMKJWf6T1XHILv8WaVothyMlwHqG+KmHVJxKHbFnjs49j5zAnf2xyqexLC74hewm6JdE6AmjLDH1BGseVU2E17VeRjIIBmPFhhASQnnneK0Fy2IYaIKHEi9C6DXxmDWscQeY+yKkREPpLfaa+JuO/Wh5C/9bEd4C7INWyxw/bbCmnUiuZeK9bpHDhfY0FkuQvKSo6ohxKiqoCIu+76qEp3XUQtkFDL0DYm2x4863bjdAdwthfY0QKsMYjgYNDTAQVlqJ9yLHwBaB66DdFPhbol9TRLDUPsS4bWMQ+sYw6kVjuwhmbaXzuOvTVWVJtpPkqpbx/DYp0b0a+AmGrBsKhWMMS+AWL1dDcipZGhctiDHSYRbRY3OSIhYdwlYaI4cppdCGsAFr8Q6uNeiU/iacalrxkSyI1ropxGCXEtDGs/cmxq50hrlvCkx+G9W/F3DzQNDLITpxerEhrFE0ntwLK3DInvGLTvGZI/0BytHInka0wce9tpDo+E0gEPwuncUkJ2ljeJuUlGzNcamS3pA8iVkEJO6ieOVR2EmXpaN3Zz7PviQbyJPMrXfgSSjcy+2mQPlv+DaR3CrrSvQGon0caxmry0Lo508tJ7KIf6BLqHvLeyC0j/RpiFnKnfQEa3sDujj1syR4CMn0AmsZ76DSMTvfe3X8C6Pv4n0yzsme4bzO6yB2f1s6NZ/VyX9YPVZU+yhcjqlx5kD9FetyNkqvMXP3mcf3ick3XMLUgtyi8uDkwtKck38s0vSzUwMDQDIr2k3AKGUTDMgRkLhFZixi4vra37hIEJABkJC8Gkai7oAQAAAAIAAAA3AAAAIgMAAAAAAAABAAAAAAAAAAAAAAA
+
